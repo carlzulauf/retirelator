@@ -23,7 +23,7 @@ These are the basic building blocks we will use to track and simulate retirement
 * target_retirement_date
 * target_death_date
 
-## Simulation
+## Simulation Configuration
 
 * description
 * start_date
@@ -42,12 +42,12 @@ These are the basic building blocks we will use to track and simulate retirement
 * roth_account
 * savings_account
 * fixed_incomes
+* transactions
 
 ## Tax Year
 
 * year
 * ppp
-* transactions
 * income_tax_brackets
 * capital_gains_tax_brackets
 
