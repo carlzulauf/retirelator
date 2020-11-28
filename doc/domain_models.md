@@ -88,9 +88,9 @@ These are the basic building blocks we will use to track and simulate retirement
 
 ## Tax Transaction
 
-* transaction
+* transaction ?
 * amount
 * tax_type
 * tax_rate
 * tax_rate_remaining
-* paid
+* paid ?

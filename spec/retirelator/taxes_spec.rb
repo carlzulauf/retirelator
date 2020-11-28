@@ -25,6 +25,7 @@ RSpec.describe Retirelator::Taxes do
     it "returns a single tax transaction if amount fits in first bucket" do
       transactions = subject.apply(666)
       expect(transactions.count).to eq(1)
+      expect(transactions.first).to be_a(Retirelator::TaxTransaction)
     end
 
     it "returns multiple tax transactions if amount is spread across buckets" do
