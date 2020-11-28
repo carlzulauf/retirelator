@@ -6,6 +6,7 @@ require "bigdecimal/util"
 require "dry-types"
 require "dry-initializer"
 require "active_support/core_ext/array/access"
+require "active_support/core_ext/numeric/time"
 
 # utilities
 require "retirelator/types"

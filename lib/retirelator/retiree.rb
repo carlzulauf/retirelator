@@ -1,9 +1,9 @@
 module Retirelator
   class Retiree < DecimalStruct
-    option :name
-    option :date_of_birth, Types::Params::Date
+    option :name, default: -> { "Kelly" }
+    option :date_of_birth, default: -> { 18.years.ago }
 
-    decimal :salary,                    default: -> { 0 }
+    decimal :salary,                    default: -> { 65_536 }
     decimal :percent_401k_contribution, default: -> { 4 }
     decimal :percent_401k_match,        default: -> { 100 }
     decimal :max_percent_401k_match,    default: -> { 4 }
