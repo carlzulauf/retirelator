@@ -8,7 +8,7 @@ module Retirelator
         brackets.from(current_bracket_index).each_with_index do |bracket, i|
           amount = bracket.apply(amount)
           tax_transactions.push(amount)
-          break if amount < 0
+          break if amount <= 0
           @current_bracket_index += i
         end
       end
