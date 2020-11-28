@@ -1,4 +1,4 @@
-RSpec.describe Retirelator::Taxes do
+describe Retirelator::Taxes do
   it "exists as a class" do
     expect(described_class).to be_a(Class)
   end
@@ -25,12 +25,28 @@ RSpec.describe Retirelator::Taxes do
     it "returns a single tax transaction if amount fits in first bucket" do
       transactions = subject.apply(666)
       expect(transactions.count).to eq(1)
-      expect(transactions.first).to be_a(Retirelator::TaxTransaction)
+      first = transactions.first
+      expect(first).to be_a(Retirelator::TaxTransaction)
+      expect(first.type).to eq(:income)
+      expect(first.amount).to eq(666)
+      expect(first.rate).to eq(tax_bracket1.rate)
+      expect(first.remaining).to eq(334)
     end
 
     it "returns multiple tax transactions if amount is spread across buckets" do
       transactions = subject.apply(1337)
       expect(transactions.count).to eq(2)
+      tran1, tran2 = transactions
+
+      expect(tran1.amount).to eq(1000)
+      expect(tran1.type).to eq(:income)
+      expect(tran1.rate).to eq(tax_bracket1.rate)
+      expect(tran1.remaining).to eq(0)
+
+      expect(tran2.amount).to eq(337)
+      expect(tran2.type).to eq(:income)
+      expect(tran2.rate).to eq(tax_bracket2.rate)
+      expect(tran2.remaining).to eq(3663)
     end
 
     it "has infinite remaining in the last bucket no matter how much is applied" do
