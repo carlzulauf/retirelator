@@ -16,6 +16,7 @@ require "retirelator/retiree"
 require "retirelator/tax_bracket"
 require "retirelator/tax_transaction"
 require "retirelator/taxes"
+require "retirelator/transaction"
 
 module Retirelator
 end
