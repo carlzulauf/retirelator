@@ -14,5 +14,13 @@ describe Retirelator::Retiree do
       expect(obj.name).to eq("Chris")
       expect(obj.salary).to eq(500_000)
     end
+
+    it "coerces numeric attributes into decimal" do
+      obj = subject.new(salary: 444_444, monthly_savings: "200.20")
+      expect(obj.salary).to eq(444_444)
+      expect(obj.salary).to be_a(BigDecimal)
+      expect(obj.monthly_savings).to eq(200.20)
+      expect(obj.monthly_savings).to be_a(BigDecimal)
+    end
   end
 end
