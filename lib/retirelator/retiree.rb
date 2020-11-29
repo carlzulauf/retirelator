@@ -1,7 +1,7 @@
 module Retirelator
   class Retiree < DecimalStruct
     option :name, default: -> { "Kelly" }
-    option :date_of_birth, default: -> { 18.years.ago }
+    option :date_of_birth, Types::JSON::Date, default: -> { 18.years.ago.to_date }
 
     decimal :salary,                    default: -> { 65_536 }
     decimal :percent_401k_contribution, default: -> { 4 }

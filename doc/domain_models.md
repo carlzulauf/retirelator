@@ -34,7 +34,7 @@ These are the basic building blocks we will use to track and simulate retirement
 * short_term_gains_ratio
 * noise
 
-## Simulator
+## Simulation
 
 * current_date
 * current_year
@@ -79,6 +79,7 @@ These are the basic building blocks we will use to track and simulate retirement
 
 ## Transaction
 
+* date
 * account
 * description
 * gross_amount

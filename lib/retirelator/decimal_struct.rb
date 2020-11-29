@@ -1,9 +1,9 @@
 module Retirelator
   class DecimalStruct
     extend Dry::Initializer
-    
+
     def self.decimal(attribute_name, **extra)
-      option(attribute_name, Types::Coercible::Decimal, **extra)
+      option(attribute_name, Types::JSON::Decimal, **extra)
     end
 
     def round(decimal)

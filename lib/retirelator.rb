@@ -12,11 +12,16 @@ require "active_support/core_ext/integer/time"
 require "retirelator/types"
 require "retirelator/decimal_struct"
 
+# domain models
 require "retirelator/retiree"
+require "retirelator/simulation_configuration"
 require "retirelator/tax_bracket"
 require "retirelator/tax_transaction"
 require "retirelator/taxes"
 require "retirelator/transaction"
 
-module Retirelator
-end
+# custom types depend on domain models existing
+require "retirelator/custom_types"
+
+# these requires depend on custom type constraints, which depend on domain models
+require "retirelator/simulation"
