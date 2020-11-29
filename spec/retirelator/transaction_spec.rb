@@ -1,19 +1,21 @@
 describe Retirelator::Transaction do
+  let(:required_attributes) do
+    {
+      account: :savings,
+      date: Date.today,
+      description:  "Growth",
+      gross_amount:   1_000,
+      net_amount:     1_000,
+      balance:      200_000,
+    }
+  end
+
   it "exists as a class" do
     expect(described_class).to be_a(Class)
   end
 
   describe ".new" do
     subject { described_class }
-    let(:required_attributes) do
-      {
-        account: :savings,
-        description:  "Growth",
-        gross_amount:   1_000,
-        net_amount:     1_000,
-        balance:      200_000,
-      }
-    end
 
     it "can be initialized with the required attributes" do
       subject.new(required_attributes)
@@ -49,6 +51,31 @@ describe Retirelator::Transaction do
       )
       expect(transaction.tax_transactions).to be_a(Array)
       expect(transaction.tax_transactions).to eq(tax_transactions)
+    end
+  end
+
+  describe "instance methods" do
+    let(:attributes) { required_attributes }
+    subject { described_class.new(attributes) }
+
+    it "returns true for #credit?" do
+      expect(subject.credit?).to eq(true)
+    end
+
+    it "returns false for #debit?" do
+      expect(subject.debit?).to eq(false)
+    end
+
+    context "with a negative gross+net" do
+      let(:attributes) { required_attributes.merge(gross_amount: -64, net_amount: -64) }
+
+      it "returns false for #credit?" do
+        expect(subject.credit?).to eq(false)
+      end
+
+      it "returns true for #debit?" do
+        expect(subject.debit?).to eq(true)
+      end
     end
   end
 end
