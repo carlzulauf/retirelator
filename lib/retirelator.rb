@@ -1,12 +1,17 @@
 # stdlib
 require "bigdecimal"
 require "bigdecimal/util"
+require "json"
 
 # dependecies
 require "dry-types"
 require "dry-initializer"
+require "active_support/json"
+require "active_support/core_ext/enumerable"
 require "active_support/core_ext/array/access"
 require "active_support/core_ext/integer/time"
+require "active_support/core_ext/module/attribute_accessors"
+require "active_support/core_ext/object/json"
 
 # utilities
 require "retirelator/types"

@@ -3,8 +3,17 @@
 
 module Retirelator
   module Types
-    SimulationConfiguration = Instance(Retirelator::SimulationConfiguration)
-    Retiree                 = Instance(Retirelator::Retiree)
-    Transactions            = Array(Retirelator::Transaction)
+    def self.hash_constructor(klass)
+      name = klass.name.split("::").last
+      constructor = Constructor(klass) do |obj|
+        Hash === obj ? klass.new(obj) : obj
+      end
+      const_set(name, constructor)
+    end
+
+    hash_constructor Retirelator::SimulationConfiguration
+    hash_constructor Retirelator::Retiree
+
+    Transactions = Array(Retirelator::Transaction)
   end
 end

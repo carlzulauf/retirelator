@@ -1,7 +1,5 @@
 module Retirelator
-  class Simulation
-    extend Dry::Initializer
-
+  class Simulation < DecimalStruct
     option :current_date, Types::JSON::Date, default: -> { Date.today }
     option :retiree, Types::Retiree, default: -> { Retiree.new }
     option :configuration, Types::SimulationConfiguration, default: -> { SimulationConfiguration.new }

@@ -30,4 +30,28 @@ describe Retirelator::Simulation do
       end
     end
   end
+
+  describe "instance methods" do
+    subject { described_class.new(attributes) }
+    let(:attributes) do
+      {
+        retiree: Retirelator::Retiree.new(name: "Alex")
+      }
+    end
+
+    describe "#as_json" do
+      it "serializes nested objects into a JSON-like document" do
+        doc = subject.as_json
+        expect(doc).to be_a(Hash)
+        expect(doc.keys).to be_many
+        expect(doc[:retiree]).to be_a(Hash)
+      end
+
+      it "returns a document that can loaded using .new" do
+        doc = subject.as_json
+        obj = described_class.new(doc)
+        expect(obj.retiree.name).to eq("Alex")
+      end
+    end
+  end
 end
