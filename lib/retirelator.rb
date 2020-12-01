@@ -22,6 +22,7 @@ require "retirelator/retiree"
 require "retirelator/simulation_configuration"
 require "retirelator/tax_bracket"
 require "retirelator/tax_transaction"
+require "retirelator/tax_year"
 require "retirelator/taxes"
 require "retirelator/transaction"
 
