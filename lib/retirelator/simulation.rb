@@ -7,6 +7,6 @@ module Retirelator
     # TODO option :ira_account, Types::IraAccount, default: -> { starting_ira_account }
     # TODO ... other accounts
     # TODO fixed income accounts
-    option :transactions, Types::Transactions, default: -> { [] }
+    option :transactions, Types::Transactions, default: -> { Array.new }
   end
 end

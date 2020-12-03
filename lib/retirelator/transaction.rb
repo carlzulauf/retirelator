@@ -18,4 +18,6 @@ module Retirelator
       gross_amount.negative?
     end
   end
+
+  Types.register_struct(Transaction, collection: true)
 end

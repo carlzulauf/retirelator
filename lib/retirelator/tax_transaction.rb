@@ -5,4 +5,6 @@ module Retirelator
     decimal :rate
     decimal :remaining
   end
+
+  Types.register_struct(TaxTransaction, collection: true)
 end

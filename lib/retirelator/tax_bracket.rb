@@ -26,4 +26,6 @@ module Retirelator
       remainder.negative? ? remainder * -1 : 0
     end
   end
+
+  Types.register_struct(TaxBracket, collection: true)
 end

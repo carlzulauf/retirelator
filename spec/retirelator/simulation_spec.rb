@@ -29,6 +29,46 @@ describe Retirelator::Simulation do
         expect(obj.send(key)).to eq(value)
       end
     end
+
+    context "with transactions" do
+      let(:transactions) do
+        [
+          Retirelator::Transaction.new(
+            account:      :ira,
+            description:  "Opening Balance",
+            date:         Date.today,
+            gross_amount: 10_000,
+            net_amount:   10_000,
+            balance:      10_000,
+          ),
+          Retirelator::Transaction.new(
+            account:      :savings,
+            description:  "Opening Balance",
+            date:         Date.today,
+            gross_amount: 12_000,
+            net_amount:   12_000,
+            balance:      12_000,
+          )
+        ]
+      end
+
+      it "can be initialized from Transaction instances" do
+        obj = subject.new(valid_attributes.merge(transactions: transactions))
+        expect(obj.transactions.count).to eq(2)
+        expect(obj.transactions[0].gross_amount).to eq(10_000)
+        expect(obj.transactions[1].balance).to eq(12_000)
+      end
+
+      it "can be initialized from transaction hashes" do
+        hashes = transactions.map(&:as_json)
+        expect(hashes[0]).to be_a(Hash)
+        obj = subject.new(valid_attributes.merge(transactions: hashes))
+        expect(obj.transactions.count).to eq(2)
+        expect(obj.transactions[0]).to be_a(Retirelator::Transaction)
+        expect(obj.transactions[0].date).to eq(Date.today)
+        expect(obj.transactions[1].net_amount).to eq(12_000)
+      end
+    end
   end
 
   describe "instance methods" do

@@ -2,7 +2,7 @@ module Retirelator
   # potentially a base class for CapitalGainsTaxes/IncomeTaxes
   class Taxes < DecimalStruct
     option :type
-    option :brackets, default: -> { Array.new }
+    option :brackets, Types::TaxBrackets, default: -> { Array.new }
 
     def apply(amount)
       [].tap do |tax_transactions|

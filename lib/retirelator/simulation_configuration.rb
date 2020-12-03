@@ -25,4 +25,6 @@ module Retirelator
       "simulation #{SecureRandom.hex(4)}"
     end
   end
+
+  Types.register_struct(SimulationConfiguration)
 end
