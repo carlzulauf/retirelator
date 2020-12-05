@@ -34,7 +34,7 @@ describe Retirelator::Simulation do
       let(:transactions) do
         [
           Retirelator::Transaction.new(
-            account:      :ira,
+            account:      "IRA",
             description:  "Opening Balance",
             date:         Date.today,
             gross_amount: 10_000,
@@ -42,7 +42,7 @@ describe Retirelator::Simulation do
             balance:      10_000,
           ),
           Retirelator::Transaction.new(
-            account:      :savings,
+            account:      "Savings",
             description:  "Opening Balance",
             date:         Date.today,
             gross_amount: 12_000,

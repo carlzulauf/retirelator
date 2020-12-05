@@ -18,6 +18,7 @@ require "retirelator/types"
 require "retirelator/decimal_struct"
 
 # domain models, ordered from independent to dependent types
+require "retirelator/fixed_income"
 require "retirelator/retiree"
 require "retirelator/simulation_configuration"
 require "retirelator/tax_bracket"

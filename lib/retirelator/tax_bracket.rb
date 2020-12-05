@@ -1,7 +1,7 @@
 module Retirelator
   class TaxBracket < DecimalStruct
-    decimal :from
-    decimal :to
+    decimal :from, default: -> { 0 }
+    decimal :to, default: -> { Float::INFINITY }
     decimal :rate, default: -> { 0 }
     decimal :remaining, default: -> { to - from }
 

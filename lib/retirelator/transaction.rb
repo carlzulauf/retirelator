@@ -1,6 +1,6 @@
 module Retirelator
   class Transaction < DecimalStruct
-    option :account,      Types::Coercible::Symbol
+    option :account,      Types::Strict::String
     option :description,  Types::Strict::String
     option :date,         Types::JSON::Date
 

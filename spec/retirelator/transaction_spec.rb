@@ -1,7 +1,7 @@
 describe Retirelator::Transaction do
   let(:required_attributes) do
     {
-      account: :savings,
+      account: "Savings",
       date: Date.today,
       description:  "Growth",
       gross_amount:   1_000,
