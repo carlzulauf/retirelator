@@ -3,9 +3,9 @@ module Retirelator
     option :name, Types::Strict::String, default: -> { "Fixed Income Account" }
     option :start_date, Types::JSON::Date, default: -> { Date.today }
     option :stop_date, Types::JSON::Date.optional, default: -> { nil }
-    option :indexed, Types::Strict::Bool, default: -> { false }
     option :taxable, Types::Strict::Bool, default: -> { false }
 
+    decimal :inflation_ratio, default: -> { 1.0 }
     decimal :monthly_income, default: -> { 0 }
 
     def pay(date, income_tax)
@@ -31,13 +31,25 @@ module Retirelator
       [transactions, amount - transactions.sum(&:total)]
     end
 
+    def inflate(ratio)
+      @monthly_income = monthly_income * ratio
+      self
+    end
+
     def balance
       0 # fixed income doesn't have a balance
     end
 
-    def inflate(ratio)
-      @monthly_income = monthly_income * ratio
-      self
+    def annual_growth_ratio
+      inflation_ratio
+    end
+
+    def taxable_withdrawals?
+      taxable
+    end
+
+    def taxable_gains?
+      false
     end
   end
 
