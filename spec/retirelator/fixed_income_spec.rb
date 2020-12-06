@@ -18,6 +18,12 @@ describe Retirelator::FixedIncome do
 
   subject { described_class.new(attributes) }
 
+  context "with no attributes" do
+    it "can be initialized with defaults" do
+      expect(described_class.new).to be_a(Retirelator::FixedIncome)
+    end
+  end
+
   context "with finite attributes" do
     it "initializes with expected values" do
       expect(subject.name).to eq("Defined Benefit Plan")
@@ -39,6 +45,16 @@ describe Retirelator::FixedIncome do
 
       it "returns no transactions after end date" do
         expect(subject.pay(Date.new(2041), taxes)).to be_empty
+      end
+    end
+
+    describe "#inflate" do
+      it "returns the fixed income instance" do
+        expect(subject.inflate(1.05)).to eq(subject)
+      end
+      it "changes the monthly_income amount by the specified ratio" do
+        subject.inflate(1.05)
+        expect(subject.monthly_income).to eq(1_575)
       end
     end
   end

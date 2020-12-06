@@ -2,7 +2,7 @@ module Retirelator
   class FixedIncome < DecimalStruct
     option :name, Types::Strict::String, default: -> { "Fixed Income Account" }
     option :start_date, Types::JSON::Date, default: -> { Date.today }
-    option :stop_date, Types::JSON::Date.optional
+    option :stop_date, Types::JSON::Date.optional, default: -> { nil }
     option :indexed, Types::Strict::Bool, default: -> { false }
     option :taxable, Types::Strict::Bool, default: -> { false }
 
@@ -26,7 +26,7 @@ module Retirelator
     end
 
     def pay_tax(amount, income_tax)
-      return [[], 0] unless taxable
+      return [[], amount] unless taxable
       transactions = income_tax.apply(amount)
       [transactions, amount - transactions.sum(&:total)]
     end
@@ -34,5 +34,12 @@ module Retirelator
     def balance
       0 # fixed income doesn't have a balance
     end
+
+    def inflate(ratio)
+      @monthly_income = monthly_income * ratio
+      self
+    end
   end
+
+  Types.register_struct(FixedIncome)
 end
