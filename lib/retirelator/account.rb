@@ -9,10 +9,30 @@ module Retirelator
       taxes.concat apply_tax(gross, income, taxable_gains, income_ratio)
       net = gross - taxes.sum(&:total)
       @balance += net
+      build_transaction("Growth", date, gross, net, taxes)
+    end
+
+    def debit(date, amount, income: nil)
+      gross = amount * -1
+      taxes = apply_tax(gross, income, taxable_distributions)
+      net = gross - taxes.sum(&:total)
+      @balance += net
+      build_transaction("Debit", date, gross, net, taxes)
+    end
+
+    def credit(date, amount, income: nil)
+      taxes = apply_tax(amount * -1, income, deductible_contributions)
+      @balance += amount
+      build_transaction("Credit", date, amount, amount, taxes)
+    end
+
+    private
+
+    def build_transaction(description, date, gross, net, taxes)
       [
         Transaction.new(
           account:          name,
-          description:      "Growth",
+          description:      description,
           date:             date,
           gross_amount:     gross,
           net_amount:       net,
@@ -21,42 +41,6 @@ module Retirelator
         )
       ]
     end
-
-    def debit(date, amount, income: nil)
-      gross = amount * -1
-      taxes = apply_tax(gross, income, taxable_distributions)
-      net = gross - taxes.sum(&:total)
-      @balance += net
-      [
-        Transaction.new(
-          account:          name,
-          description:      "Debit",
-          date:             date,
-          gross_amount:     amount,
-          net_amount:       net,
-          balance:          balance,
-          tax_transactions: taxes,
-        )
-      ]
-    end
-
-    def credit(date, amount, income: nil)
-      taxes = apply_tax(amount * -1, income, deductible_contributions)
-      @balance += amount
-      [
-        Transaction.new(
-          account:          name,
-          description:      "Credit",
-          date:             date,
-          gross_amount:     amount,
-          net_amount:       amount,
-          balance:          balance,
-          tax_transactions: taxes,
-        )
-      ]
-    end
-
-    private
 
     def apply_tax(amount, taxes, taxable, ratio = 1)
       return [] if !taxable || ratio.zero?

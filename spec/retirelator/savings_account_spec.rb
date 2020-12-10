@@ -72,7 +72,7 @@ describe Retirelator::SavingsAccount do
       it "returns a transaction with the specified amount and no tax tranasctions" do
         transactions = subject.debit(date, 400)
         expect(transactions.count).to eq(1)
-        expect(transactions[0].gross_amount).to eq(400)
+        expect(transactions[0].gross_amount).to eq(-400)
         expect(transactions[0].tax_transactions).to be_empty
       end
     end
