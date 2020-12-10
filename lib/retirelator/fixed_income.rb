@@ -5,7 +5,6 @@ module Retirelator
     option :stop_date, Types::JSON::Date.optional, default: -> { nil }
     option :taxable, Types::Strict::Bool, default: -> { false }
 
-    decimal :inflation_ratio, default: -> { 1.0 }
     decimal :monthly_income, default: -> { 0 }
 
     def pay(date, income_tax)
@@ -38,10 +37,6 @@ module Retirelator
 
     def balance
       0 # fixed income doesn't have a balance
-    end
-
-    def annual_growth_ratio
-      inflation_ratio
     end
 
     def taxable_withdrawals?
