@@ -6,22 +6,19 @@ module Retirelator
 
     def apply(amount)
       [].tap do |tax_transactions|
-        brackets.from(current_bracket_index).each_with_index do |bracket, i|
-          transaction, amount = apply_to_bracket(amount, bracket)
-          tax_transactions << transaction unless transaction.amount.zero?
-          break if amount <= 0
-          @current_bracket_index += i
+        loop do
+          bracket     = brackets[current_bracket_index]
+          remainder   = bracket.apply(amount)
+          applied     = amount - remainder
+          tax_transactions << build_tax_transaction(applied, bracket)
+          break if remainder.zero?
+          amount = remainder
+          @current_bracket_index = current_bracket_index + (amount.positive? ? 1 : -1)
         end
       end
     end
 
     private
-
-    def apply_to_bracket(amount, bracket)
-      remainder = bracket.apply(amount)
-      transaction = build_tax_transaction(amount - remainder, bracket)
-      [transaction, remainder]
-    end
 
     def current_bracket_index
       @current_bracket_index ||= 0

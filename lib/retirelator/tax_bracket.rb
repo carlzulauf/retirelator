@@ -3,7 +3,7 @@ module Retirelator
     decimal :from, default: -> { 0 }
     decimal :to, default: -> { Float::INFINITY }
     decimal :rate, default: -> { 0 }
-    decimal :remaining, default: -> { to - from }
+    decimal :applied, default: -> { 0 }
 
     def description
       "$#{from.round(2)} to $#{to.round(2)} at #{rate.round(2)}%"
@@ -13,17 +13,41 @@ module Retirelator
       from...to
     end
 
+    def size
+      to - from
+    end
+
+    def remaining
+      to - (applied + from)
+    end
+
+    def first?
+      from.zero?
+    end
+
     def inflate(ratio)
       self.class.new(from: from * ratio, to: to * ratio, rate: rate)
     end
     alias_method :*, :inflate
 
-    # subtracts the supplied amount from the balance remaining
-    # returns the remainder, or zero if there is no remainder
     def apply(amount)
-      remainder = remaining - amount
-      @remaining = [0, remainder].max
-      remainder.negative? ? remainder * -1 : 0
+      amount.positive? ? debit(amount) : -credit(-amount)
+    end
+
+    def creditable_remaining
+      first? ? Float::INFINITY : applied
+    end
+
+    def credit(amount)
+      credit_amount = [creditable_remaining, amount].min
+      @applied -= credit_amount
+      amount - credit_amount
+    end
+
+    def debit(amount)
+      debit_amount = [remaining, amount].min
+      @applied += debit_amount
+      amount - debit_amount
     end
   end
 

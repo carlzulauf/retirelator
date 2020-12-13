@@ -5,7 +5,7 @@ describe Retirelator::Taxes do
 
   let(:tax_bracket1) { Retirelator::TaxBracket.new(from: 0, to: 1000, rate: 0) }
   let(:tax_bracket2) { Retirelator::TaxBracket.new(from: 1000, to: 5000, rate: 10) }
-  let(:tax_bracket3) { Retirelator::TaxBracket.new(from: 5000, to: Float::INFINITY) }
+  let(:tax_bracket3) { Retirelator::TaxBracket.new(from: 5000, to: Float::INFINITY, rate: 15) }
   let(:brackets) { [tax_bracket1, tax_bracket2, tax_bracket3] }
   subject { described_class.new(type: :income, brackets: brackets) }
 
@@ -55,5 +55,22 @@ describe Retirelator::Taxes do
       expect(tax_bracket2.remaining).to eq(0)
       expect(tax_bracket3.remaining).to eq(Float::INFINITY)
     end
+
+    context "with negative amounts" do
+      it "refills tax brackets" do
+        subject.apply(3500) # empty the first bracket and part of the second
+        subject.apply(-3500)
+        expect(tax_bracket2.remaining).to eq(4000)
+        expect(tax_bracket1.remaining).to eq(1000)
+      end
+
+      it "can grow the first tax bracket beyond its initial size" do
+        subject.apply(3500)
+        subject.apply(-4500)
+        expect(tax_bracket1.applied).to eq(-1000)
+        expect(tax_bracket1.remaining).to eq(2000)
+      end
+    end
+
   end
 end
