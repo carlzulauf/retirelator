@@ -3,11 +3,8 @@ describe Retirelator::Taxes do
     expect(described_class).to be_a(Class)
   end
 
-  let(:tax_bracket1) { Retirelator::TaxBracket.new(from: 0, to: 1000, rate: 0) }
-  let(:tax_bracket2) { Retirelator::TaxBracket.new(from: 1000, to: 5000, rate: 10) }
-  let(:tax_bracket3) { Retirelator::TaxBracket.new(from: 5000, to: Float::INFINITY, rate: 15) }
-  let(:brackets) { [tax_bracket1, tax_bracket2, tax_bracket3] }
-  subject { described_class.new(type: :income, brackets: brackets) }
+  include_context "with income tax brackets"
+  subject { income_taxes }
 
   describe "#apply" do
     it "applies amount to first bucket" do

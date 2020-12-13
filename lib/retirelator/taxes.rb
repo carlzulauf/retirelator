@@ -18,6 +18,19 @@ module Retirelator
       end
     end
 
+    def net_debit(amount)
+      [].tap do |tax_transactions|
+        loop do
+          bracket = brackets[current_bracket_index]
+          gross, remainder = bracket.net_debit(amount)
+          tax_transactions << build_tax_transaction(gross, bracket)
+          break if remainder.zero?
+          amount = remainder
+          @current_bracket_index += 1
+        end
+      end
+    end
+
     private
 
     def current_bracket_index

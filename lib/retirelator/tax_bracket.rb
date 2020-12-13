@@ -49,6 +49,13 @@ module Retirelator
       @applied += debit_amount
       amount - debit_amount
     end
+
+    def net_debit(amount)
+      net_ratio = 1 - (rate / 100)
+      gross = (amount / net_ratio).round(2, BigDecimal::ROUND_UP)
+      remainder = debit(gross)
+      [gross - remainder, remainder]
+    end
   end
 
   Types.register_struct(TaxBracket, collection: true)

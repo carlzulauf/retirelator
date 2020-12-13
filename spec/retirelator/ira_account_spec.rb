@@ -1,4 +1,5 @@
 describe Retirelator::IraAccount do
+  include_context "with income tax brackets"
   let(:attributes) do
     {}
   end
@@ -12,5 +13,11 @@ describe Retirelator::IraAccount do
     it "records and withholds taxable portion"
   end
 
-  describe "#credit"
+  describe "#credit" do
+    it "reduces income tax by the contributed amount" do
+      expect(tax_bracket1.remaining).to eq(1000)
+      subject.credit(Date.today, 337, income: income_taxes)
+      expect(tax_bracket1.remaining).to eq(1337)
+    end
+  end
 end

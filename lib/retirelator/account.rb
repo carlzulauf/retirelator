@@ -12,12 +12,17 @@ module Retirelator
       build_transaction("Growth", date, gross, net, taxes)
     end
 
-    def debit(date, amount, income: nil)
+    def debit(date, amount, income: nil, penalty: 0.to_d)
       gross = amount * -1
-      taxes = apply_tax(gross, income, taxable_distributions)
-      net = gross - taxes.sum(&:total)
+      net = penalty.zero? ? gross : (gross * (penalty / 100)).round(2)
+      taxes = apply_tax(net, income, taxable_distributions)
+      net -= taxes.sum(&:total)
       @balance += net
       build_transaction("Debit", date, gross, net, taxes)
+    end
+
+    def distribute
+
     end
 
     def credit(date, amount, income: nil)
