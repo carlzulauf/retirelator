@@ -54,7 +54,7 @@ module Retirelator
       net_ratio = 1 - (rate / 100)
       gross = (amount / net_ratio).round(2, BigDecimal::ROUND_UP)
       remainder = debit(gross)
-      [gross - remainder, remainder]
+      [gross - remainder, remainder * net_ratio]
     end
   end
 

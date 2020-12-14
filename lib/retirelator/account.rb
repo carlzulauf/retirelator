@@ -13,16 +13,24 @@ module Retirelator
     end
 
     def debit(date, amount, income: nil, penalty: 0.to_d)
-      gross = amount * -1
-      net = penalty.zero? ? gross : (gross * (penalty / 100)).round(2)
+      net = (amount * (1 - (penalty / 100))).round(2)
       taxes = apply_tax(net, income, taxable_distributions)
       net -= taxes.sum(&:total)
-      @balance += net
-      build_transaction("Debit", date, gross, net, taxes)
+      @balance -= amount
+      build_transaction("Debit", date, -amount, -net, taxes)
     end
 
-    def distribute
-
+    def net_debit(date, amount, income:, penalty: 0.to_d)
+      if taxable_distributions
+        taxes = income.net_debit(amount)
+        gross = taxes.sum(&:gross_amount)
+        net   = taxes.sum(&:net_amount)
+        net  -= (gross * (penalty / 100)).round(2)
+        @balance -= gross
+        build_transaction("Debit (Net #{amount})", date, -gross, -net, taxes)
+      else
+        debit(date, amount, income: income, penalty: penalty)
+      end
     end
 
     def credit(date, amount, income: nil)
@@ -50,7 +58,7 @@ module Retirelator
     def apply_tax(amount, taxes, taxable, ratio = 1)
       return [] if !taxable || ratio.zero?
       raise ArgumentError, "required taxes missing" if taxes.nil?
-      taxes.apply (amount * ratio).round(2)
+      taxes.apply( (amount * ratio).round(2) )
     end
 
     def default_name

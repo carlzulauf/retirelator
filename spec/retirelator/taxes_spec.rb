@@ -74,7 +74,9 @@ describe Retirelator::Taxes do
   describe "#net_debit" do
     it "applies a gross amount that nets the specified amount after taxes" do
       transactions = subject.net_debit(20_000)
-      # binding.pry
+      net_amount = transactions.sum(&:net_amount)
+      expect(net_amount).to be >= 20_000
+      expect(net_amount).to be_within(1).of(20_000)
     end
   end
 end
