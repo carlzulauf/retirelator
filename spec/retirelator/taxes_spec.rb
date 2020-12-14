@@ -27,7 +27,7 @@ describe Retirelator::Taxes do
       expect(first.type).to eq(:income)
       expect(first.amount).to eq(666)
       expect(first.rate).to eq(tax_bracket1.rate)
-      expect(first.remaining).to eq(334)
+      expect(first.applied).to eq(666)
     end
 
     it "returns multiple tax transactions if amount is spread across buckets" do
@@ -38,12 +38,12 @@ describe Retirelator::Taxes do
       expect(tran1.amount).to eq(1000)
       expect(tran1.type).to eq(:income)
       expect(tran1.rate).to eq(tax_bracket1.rate)
-      expect(tran1.remaining).to eq(0)
+      expect(tran1.applied).to eq(1000)
 
       expect(tran2.amount).to eq(337)
       expect(tran2.type).to eq(:income)
       expect(tran2.rate).to eq(tax_bracket2.rate)
-      expect(tran2.remaining).to eq(3663)
+      expect(tran2.applied).to eq(337)
     end
 
     it "has infinite remaining in the last bucket no matter how much is applied" do
@@ -69,5 +69,12 @@ describe Retirelator::Taxes do
       end
     end
 
+  end
+
+  describe "#net_debit" do
+    it "applies a gross amount that nets the specified amount after taxes" do
+      transactions = subject.net_debit(20_000)
+      # binding.pry
+    end
   end
 end

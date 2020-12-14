@@ -42,7 +42,7 @@ module Retirelator
         type:       type,
         amount:     applied,
         rate:       bracket.rate,
-        remaining:  bracket.remaining
+        applied:    bracket.applied,
       )
     end
   end

@@ -37,13 +37,13 @@ describe Retirelator::Transaction do
           type:       :income,
           amount:     50,
           rate:       5,
-          remaining:  0,
+          applied:    0,
         ),
         Retirelator::TaxTransaction.new(
           type:       :income,
           amount:     950,
           rate:       10,
-          remaining:  3_050,
+          applied:    3_050,
         )
       ]
       transaction = subject.new(
