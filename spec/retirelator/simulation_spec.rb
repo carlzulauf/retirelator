@@ -94,6 +94,19 @@ describe Retirelator::Simulation do
         doc = subject.as_json
         obj = described_class.new(doc)
         expect(obj.retiree.name).to eq("Pat")
+        expect(obj.roth_account.balance).to eq(25_000)
+        expect(obj.savings_account.balance).to eq(75_000)
+        expect(obj.ira_account.balance).to eq(500_000)
+      end
+    end
+
+    describe "#to_json" do
+      it "returns a json document that can be parsed and loaded with .new" do
+        json = subject.to_json
+        doc = JSON.parse(json, symbolize_names: true)
+        obj = described_class.new(doc)
+        expect(obj.retiree.name).to eq("Pat")
+        expect(obj.roth_account.balance).to eq(25_000)
         expect(obj.savings_account.balance).to eq(75_000)
         expect(obj.ira_account.balance).to eq(500_000)
       end
