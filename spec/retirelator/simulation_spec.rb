@@ -94,6 +94,8 @@ describe Retirelator::Simulation do
         doc = subject.as_json
         obj = described_class.new(doc)
         expect(obj.retiree.name).to eq("Pat")
+        expect(obj.savings_account.balance).to eq(75_000)
+        expect(obj.ira_account.balance).to eq(500_000)
       end
     end
   end
