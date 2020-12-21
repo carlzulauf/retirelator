@@ -15,4 +15,6 @@ module Retirelator
       ].join(" ")
     end
   end
+
+  Types.register_struct(SavingsAccount)
 end

@@ -37,4 +37,5 @@ module Retirelator
       distribution + contribution
     end
   end
+  Types.register_struct(RothAccount)
 end
