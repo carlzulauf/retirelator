@@ -1,0 +1,42 @@
+{
+  "current_date": "2010-12-22",
+  "retiree": {
+    "name": "Pat",
+    "date_of_birth": "2002-12-22",
+    "salary": "65536.0",
+    "percent_401k_contribution": "4.0",
+    "percent_401k_match": "100.0",
+    "max_percent_401k_match": "4.0",
+    "ira_balance": "0.0",
+    "roth_balance": "0.0",
+    "savings_balance": "0.0",
+    "annual_ira_contribution": "0.0",
+    "annual_roth_contribution": "0.0",
+    "annual_roth_conversion": "0.0",
+    "monthly_savings": "0.0"
+  },
+  "configuration": {
+    "description": "simulation 506d8a74",
+    "start_date": "2020-12-22",
+    "inflation_rate": "7.0",
+    "salary_growth_rate": "7.0",
+    "tax_brackets_growth_rate": "7.0",
+    "investment_growth_rate": "6.5",
+    "short_term_gains_ratio": "0.1"
+  },
+  "ira_account": {
+    "name": "IRA Account",
+    "balance": "500000.0"
+  },
+  "savings_account": {
+    "name": "Savings Account",
+    "balance": "75000.0"
+  },
+  "roth_account": {
+    "name": "Roth IRA Account",
+    "balance": "25000.0"
+  },
+  "transactions": [
+
+  ]
+}

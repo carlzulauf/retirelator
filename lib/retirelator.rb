@@ -33,3 +33,25 @@ require "retirelator/transaction"
 require "retirelator/taxes"
 require "retirelator/tax_year"
 require "retirelator/simulation"
+
+module Retirelator
+  def self.open(path = default_path)
+    open_json File.read(path)
+  end
+
+  def self.save(simulation, path = default_path)
+    File.write(path, JSON.pretty_generate(simulation.as_json))
+  end
+
+  def self.default_path
+    "simulation.json"
+  end
+
+  def self.open_json(json)
+    Simulation.new parse(json)
+  end
+
+  def self.parse(json)
+    JSON.parse(json, symbolize_names: true)
+  end
+end

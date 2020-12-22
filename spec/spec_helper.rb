@@ -15,3 +15,34 @@ shared_context "with income tax brackets" do
   let(:brackets) { [tax_bracket1, tax_bracket2, tax_bracket3] }
   let(:income_taxes) { Retirelator::Taxes.new(type: :income, brackets: brackets) }
 end
+
+shared_context "with a valid simulation" do
+  let(:retiree) { Retirelator::Retiree.new(name: "Pat") }
+  let(:configuration) do
+    Retirelator::SimulationConfiguration.new(inflation_rate: 7.0)
+  end
+  let(:ira_account) { Retirelator::IraAccount.new(balance: 500_000) }
+  let(:roth_account) { Retirelator::RothAccount.new(balance: 25_000) }
+  let(:savings_account) { Retirelator::SavingsAccount.new(balance: 75_000) }
+
+  let(:simulation_attributes) do
+    {
+      retiree:          retiree,
+      current_date:     10.years.ago.to_date,
+      configuration:    configuration,
+      ira_account:      ira_account,
+      roth_account:     roth_account,
+      savings_account:  savings_account,
+    }
+  end
+
+  let(:simulation) { Retirelator::Simulation.new(simulation_attributes) }
+end
+
+# Uncomment this to re-generate spec/support/valid_simulation.json
+# describe "prerequisites" do
+#   include_context "with a valid simulation"
+#   it "saves a valid simulation to spec/support" do
+#     Retirelator.save(simulation, "spec/support/valid_simulation.json")
+#   end
+# end
