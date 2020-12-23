@@ -1,24 +1,28 @@
 module Retirelator
   class TaxBracket < DecimalStruct
     decimal :from, default: -> { 0 }
-    decimal :to, default: -> { Float::INFINITY }
+    option :to, Types::JSON::Decimal.optional, default: -> { Float::INFINITY }
     decimal :rate, default: -> { 0 }
     decimal :applied, default: -> { 0 }
+
+    def numeric_to
+      to || Float::INFINITY
+    end
 
     def description
       "$#{from.round(2)} to $#{to.round(2)} at #{rate.round(2)}%"
     end
 
     def range
-      from...to
+      from...numeric_to
     end
 
     def size
-      to - from
+      numeric_to - from
     end
 
     def remaining
-      to - (applied + from)
+      numeric_to - (applied + from)
     end
 
     def first?
@@ -26,7 +30,7 @@ module Retirelator
     end
 
     def inflate(ratio)
-      self.class.new(from: from * ratio, to: to * ratio, rate: rate)
+      self.class.new(from: from * ratio, to: numeric_to * ratio, rate: rate)
     end
     alias_method :*, :inflate
 

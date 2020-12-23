@@ -16,7 +16,7 @@ describe Retirelator do
 
     it "can save simulation state to disk" do
       expect do
-        Retirelator.save(simulation, "spec/support/tmp_simulation.json")
+        Retirelator.save(simulation, path)
       end.to change { File.exist?(path) }.from(false).to(true)
       loaded = Retirelator.open(path)
       expect(loaded.retiree.name).to eq("Alex")

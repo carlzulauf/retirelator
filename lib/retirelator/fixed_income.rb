@@ -48,5 +48,5 @@ module Retirelator
     end
   end
 
-  Types.register_struct(FixedIncome)
+  Types.register_struct(FixedIncome, collection: true)
 end
