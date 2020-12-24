@@ -2,6 +2,7 @@
 require "bigdecimal"
 require "bigdecimal/util"
 require "json"
+require "securerandom"
 
 # dependecies
 require "dry-types"
@@ -79,10 +80,11 @@ module Retirelator
 
   def self.retiree_params(params)
     params.slice(*%i{
-      name date_of_birth salary
+      name salary
+      date_of_birth retirement_date target_death_date
       percent_401k_contribution percent_401k_match max_percent_401k_match
       annual_ira_contribution annual_roth_contribution annual_roth_conversion
-      monthly_savings monthly_income
+      monthly_savings monthly_allowance
     })
   end
 

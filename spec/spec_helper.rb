@@ -28,7 +28,7 @@ shared_context "with a valid simulation" do
   let(:simulation_attributes) do
     {
       retiree:          retiree,
-      current_date:     10.years.ago.to_date,
+      start_date:       10.years.ago.to_date,
       configuration:    configuration,
       ira_account:      ira_account,
       roth_account:     roth_account,

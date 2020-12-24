@@ -5,6 +5,7 @@ module Retirelator
     alias_method :gross_amount, :amount
     decimal :rate
     decimal :applied
+    option :description, Types::Strict::String.optional, default: -> { nil }
 
     def taxes_paid
       (amount * (rate / 100)).round(2)

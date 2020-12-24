@@ -54,6 +54,18 @@ module Retirelator
       build_transaction(description, date, amount, amount, taxes)
     end
 
+    def taxable_gains
+      true
+    end
+
+    def taxable_distributions
+      false
+    end
+
+    def deductible_contributions
+      false
+    end
+
     private
 
     def build_transaction(description, date, gross, net, taxes = [], account: self)
@@ -78,18 +90,6 @@ module Retirelator
 
     def default_name
       raise NotImplementedError, "default_name not defined for #{self.class}"
-    end
-
-    def taxable_gains
-      true
-    end
-
-    def taxable_distributions
-      false
-    end
-
-    def deductible_contributions
-      false
     end
   end
 end
