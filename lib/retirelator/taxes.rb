@@ -54,6 +54,7 @@ module Retirelator
         amount:     applied,
         rate:       bracket.rate,
         applied:    bracket.applied,
+        remaining:  bracket.remaining,
         **extra
       )
     end

@@ -2,9 +2,11 @@
 require "bigdecimal"
 require "bigdecimal/util"
 require "json"
+require "yaml"
 require "securerandom"
 
 # dependecies
+require "ulid"
 require "dry-types"
 require "dry-initializer"
 require "retirelator/active_support_features"
@@ -31,16 +33,12 @@ require "retirelator/tax_year"
 require "retirelator/simulation"
 
 module Retirelator
-  def self.open(path = default_path)
+  def self.open(path)
     open_json File.read(path)
   end
 
-  def self.save(simulation, path = default_path)
+  def self.save(simulation, path)
     File.write(path, JSON.pretty_generate(simulation.as_json))
-  end
-
-  def self.default_path
-    "simulation.json"
   end
 
   def self.open_json(json)
@@ -67,15 +65,19 @@ module Retirelator
     )
   end
 
-  def self.default_params
-    default_sim = Simulation.new.as_json
-    retiree_params(default_sim[:retiree]).merge(
-      configuration_params(default_sim[:configuration])
+  def self.to_params(simulation)
+    jsonish = simulation.as_json
+    retiree_params(jsonish[:retiree]).merge(
+      configuration_params(jsonish[:configuration])
     ).merge(
-      ira_balance:      default_sim.dig(:ira_account,     :balance),
-      roth_balance:     default_sim.dig(:roth_account,    :balance),
-      savings_balance:  default_sim.dig(:savings_account, :balance),
+      ira_balance:      jsonish.dig(:ira_account,     :balance),
+      roth_balance:     jsonish.dig(:roth_account,    :balance),
+      savings_balance:  jsonish.dig(:savings_account, :balance),
     )
+  end
+
+  def self.default_params
+    to_params(Simulation.new)
   end
 
   def self.retiree_params(params)

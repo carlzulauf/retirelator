@@ -15,6 +15,10 @@ module Retirelator
     decimal :annual_roth_conversion,    default: -> { 0 }
     decimal :monthly_savings,           default: -> { 0 }
     decimal :monthly_allowance,         default: -> { 4_500 }
+
+    def monthly_salary
+      (salary / 12).round(2)
+    end
   end
 
   Types.register_struct(Retiree)

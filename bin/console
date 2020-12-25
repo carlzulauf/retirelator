@@ -1,9 +1,5 @@
 #!/usr/bin/env ruby
-
 require "pry"
-
-ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), ".."))
-$LOAD_PATH.push File.join(ROOT_DIR, "lib")
-require "retirelator"
+require_relative "env.rb"
 
 Pry.start Retirelator

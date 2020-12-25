@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+require "pry"
+require_relative "env.rb"
+require "yaml"
+
+if ARGV[0].blank?
+  puts "Missing required path to simulation configuration"
+  exit
+end
+
+save_name = "#{File.basename(ARGV[0], '.yml')}.#{Time.now.to_i}.json"
+save_path = File.join(ROOT_DIR, "simulations", save_name)
+simulation = Retirelator.from_params YAML.load_file(ARGV[0])
+puts "Saving initial simuation to #{save_path}"
+Retirelator.save(simulation, save_path)
+simulation.simulate!
+puts "Saving completed simuation to #{save_path}"
+Retirelator.save(simulation, save_path)

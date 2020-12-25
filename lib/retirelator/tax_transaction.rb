@@ -1,14 +1,16 @@
 module Retirelator
   class TaxTransaction < DecimalStruct
+    option :id, Types::Strict::String, default: -> { ULID.generate }
     option :type, Types::Coercible::Symbol
     decimal :amount
     alias_method :gross_amount, :amount
     decimal :rate
     decimal :applied
+    decimal :remaining
     option :description, Types::Strict::String.optional, default: -> { nil }
 
     def taxes_paid
-      (amount * (rate / 100)).round(2)
+      (amount * percent).round(2)
     end
     alias_method :total, :taxes_paid
 
