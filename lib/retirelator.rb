@@ -3,6 +3,7 @@ require "bigdecimal"
 require "bigdecimal/util"
 require "json"
 require "yaml"
+require "csv"
 require "securerandom"
 
 # dependecies
@@ -38,7 +39,30 @@ module Retirelator
   end
 
   def self.save(simulation, path)
-    File.write(path, JSON.pretty_generate(simulation.as_json))
+    if File.directory?(path)
+      save_json(simulation, File.join(path, "simulation.json"))
+      save_csv(simulation.transactions, File.join(path, "transactions.csv"))
+      save_csv(simulation.tax_transactions, File.join(path, "taxes.csv"))
+      save_csv(simulation.savings_transactions, File.join(path, "savings.csv"))
+      save_csv(simulation.ira_transactions, File.join(path, "ira.csv"))
+      save_csv(simulation.roth_transactions, File.join(path, "roth_ira.csv"))
+    else
+      save_json(simulation, path)
+    end
+  end
+
+  def self.save_csv(collection, path)
+    CSV.open(path, "w") do |csv|
+      collection.each_with_index do |transaction, i|
+        row = transaction.as_csv
+        csv << row.keys if i == 0
+        csv << row.values.map(&:to_s)
+      end
+    end
+  end
+
+  def self.save_json(simulation, path)
+    File.write(path, simulation.to_json)
   end
 
   def self.open_json(json)

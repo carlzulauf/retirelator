@@ -50,7 +50,7 @@ describe Retirelator::Taxes do
       subject.apply(130_000_000_000)
       expect(tax_bracket1.remaining).to eq(0)
       expect(tax_bracket2.remaining).to eq(0)
-      expect(tax_bracket3.remaining).to eq(Float::INFINITY)
+      expect(tax_bracket3.remaining).to eq(BigDecimal::INFINITY)
     end
 
     context "with negative amounts" do

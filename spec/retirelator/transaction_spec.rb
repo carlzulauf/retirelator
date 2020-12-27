@@ -35,6 +35,7 @@ describe Retirelator::Transaction do
       tax_transactions = [
         Retirelator::TaxTransaction.new(
           type:       :income,
+          year:       2020,
           amount:     50,
           rate:       5,
           applied:    50,
@@ -42,6 +43,7 @@ describe Retirelator::Transaction do
         ),
         Retirelator::TaxTransaction.new(
           type:       :income,
+          year:       2020,
           amount:     950,
           rate:       10,
           applied:    3_050,

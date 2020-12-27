@@ -19,12 +19,14 @@ describe Retirelator::SavingsAccount do
     let(:income) do
       Retirelator::Taxes.new(
         type: :income,
+        year: 2020,
         brackets: [ Retirelator::TaxBracket.new(rate: 13) ]
       )
     end
     let(:capital_gains) do
       Retirelator::Taxes.new(
         type: :capital_gains,
+        year: 2020,
         brackets: [ Retirelator::TaxBracket.new(rate: 10) ]
       )
     end

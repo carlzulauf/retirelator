@@ -8,8 +8,9 @@ if ARGV[0].blank?
   exit
 end
 
-save_name = "#{File.basename(ARGV[0], '.yml')}.#{Time.now.to_i}.json"
+save_name = ARGV[1].presence || File.basename(ARGV[0], '.yml')
 save_path = File.join(ROOT_DIR, "simulations", save_name)
+FileUtils.mkdir_p(save_path)
 simulation = Retirelator.from_params YAML.load_file(ARGV[0])
 puts "Saving initial simuation to #{save_path}"
 Retirelator.save(simulation, save_path)

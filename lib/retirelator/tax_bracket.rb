@@ -1,12 +1,12 @@
 module Retirelator
   class TaxBracket < DecimalStruct
     decimal :from, default: -> { 0 }
-    option :to, Types::JSON::Decimal.optional, default: -> { Float::INFINITY }
+    option :to, Types::JSON::Decimal.optional, default: -> { BigDecimal::INFINITY }
     decimal :rate, default: -> { 0 }
     decimal :applied, default: -> { 0 }
 
     def numeric_to
-      to || Float::INFINITY
+      to || BigDecimal::INFINITY
     end
 
     def description
@@ -30,7 +30,9 @@ module Retirelator
     end
 
     def inflate(ratio)
-      self.class.new(from: from * ratio, to: numeric_to * ratio, rate: rate)
+      inflated_from = (from * ratio).ceil
+      inflated_to = numeric_to.infinite? ? numeric_to : (numeric_to * ratio).ceil
+      self.class.new(from: inflated_from, to: inflated_to, rate: rate)
     end
     alias_method :*, :inflate
 
@@ -39,7 +41,7 @@ module Retirelator
     end
 
     def creditable_remaining
-      first? ? Float::INFINITY : applied
+      first? ? BigDecimal::INFINITY : applied
     end
 
     def credit(amount)

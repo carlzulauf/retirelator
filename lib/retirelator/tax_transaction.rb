@@ -2,6 +2,7 @@ module Retirelator
   class TaxTransaction < DecimalStruct
     option :id, Types::Strict::String, default: -> { ULID.generate }
     option :type, Types::Coercible::Symbol
+    option :year, Types::Strict::Integer
     decimal :amount
     alias_method :gross_amount, :amount
     decimal :rate
@@ -20,6 +21,20 @@ module Retirelator
 
     def percent
       rate / 100
+    end
+
+    def as_csv
+      {
+        "Year"            => year,
+        "Type"            => type,
+        "ID"              => id,
+        "Description"     => description,
+        "Taxable Amount"  => gross_amount,
+        "Taxes Paid"      => taxes_paid,
+        "Rate"            => rate,
+        "Applied"         => applied,
+        "Remaining"       => remaining,
+      }
     end
   end
 

@@ -2,6 +2,7 @@ module Retirelator
   # potentially a base class for CapitalGainsTaxes/IncomeTaxes
   class Taxes < DecimalStruct
     option :type
+    option :year, Types::Strict::Integer
     option :brackets, Types::TaxBrackets, default: -> { Array.new }
 
     def self.from_thresholds(type, thresholds)
@@ -13,6 +14,14 @@ module Retirelator
         TaxBracket.new(options)
       end
       new(type: type, brackets: brackets)
+    end
+
+    def inflate(ratio, tax_year = year + 1)
+      self.class.new(
+        type: type,
+        year: year,
+        brackets: brackets.map { |b| b.inflate(ratio) }
+      )
     end
 
     def apply(amount, **extra)
@@ -51,6 +60,7 @@ module Retirelator
     def build_tax_transaction(applied, bracket, **extra)
       TaxTransaction.new(
         type:       type,
+        year:       year,
         amount:     applied,
         rate:       bracket.rate,
         applied:    bracket.applied,

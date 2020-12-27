@@ -25,6 +25,14 @@ module Retirelator
     # amount greater than 1 is an extreme amount of noise
     decimal :noise,                     default: -> { 0 }
 
+    def inflation_ratio
+      (inflation_rate / 100) + 1
+    end
+
+    def annual_salary_growth_ratio
+      (salary_growth_rate / 100) + 1
+    end
+
     def monthly_investment_growth_ratio
       monthly_ratio(investment_growth_rate)
     end

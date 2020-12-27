@@ -5,12 +5,23 @@ module Retirelator
     option :capital_gains, Types::Taxes, default: -> { default_capital_gains }
     decimal :ppp, default: -> { 1 }
 
+    def next_year(inflation_ratio)
+      tax_year = year + 1
+      self.class.new(
+        year:           tax_year,
+        income:         income.inflate(inflation_ratio, tax_year),
+        capital_gains:  capital_gains.inflate(inflation_ratio, tax_year),
+        ppp:            ppp * inflation_ratio,
+      )
+    end
+
     private
 
     def default_income_tax
       # last known single filer rates in USA
       Taxes.new(
         type: :income,
+        year: year,
         brackets: [
           {                 to:   9_875,  rate: 10 },
           { from:   9_875,  to:  40_125,  rate: 12 },
@@ -27,6 +38,7 @@ module Retirelator
       # last known single filer rates in USA
       Taxes.new(
         type: :capital_gains,
+        year: year,
         brackets: [
           {                 to:  39_375,  rate: 0  },
           { from: 39_375,   to: 434_550,  rate: 15 },

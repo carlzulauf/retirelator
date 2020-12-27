@@ -12,6 +12,7 @@ describe Retirelator::FixedIncome do
   let(:taxes) do
     Retirelator::Taxes.new(
       type: :income,
+      year: 2020,
       brackets: [ Retirelator::TaxBracket.new(rate: 13) ]
     )
   end

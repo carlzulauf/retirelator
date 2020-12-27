@@ -19,6 +19,18 @@ module Retirelator
     def debit?
       gross_amount.negative?
     end
+
+    def as_csv
+      {
+        "ID"              => id,
+        "Date"            => date,
+        "Account"         => account,
+        "Description"     => description,
+        "Gross Amount"    => gross_amount,
+        "Net Amount"      => net_amount,
+        "Balance"         => balance,
+      }
+    end
   end
 
   Types.register_struct(Transaction, collection: true)
