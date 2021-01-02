@@ -9,6 +9,7 @@ module Retirelator
     decimal :applied
     decimal :remaining
     option :description, Types::Strict::String.optional, default: -> { nil }
+    option :account, Types::Strict::String.optional, default: -> { nil }
 
     def taxes_paid
       (amount * percent).round(2)
@@ -28,6 +29,7 @@ module Retirelator
         "Year"            => year,
         "Type"            => type,
         "ID"              => id,
+        "Account"         => account,
         "Description"     => description,
         "Taxable Amount"  => gross_amount,
         "Taxes Paid"      => taxes_paid,

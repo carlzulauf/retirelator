@@ -221,7 +221,7 @@ module Retirelator
 
     def simulate_account_growth
       accounts.each do |account|
-        next if account.balance.zero?
+        next unless account.balance.positive?
         add_transactions account.grow(
           current_date,
           configuration.monthly_investment_growth_ratio,
