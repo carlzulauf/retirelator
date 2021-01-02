@@ -179,7 +179,9 @@ module Retirelator
     end
 
     def simulate_monthly_savings
-      add_transactions savings_account.credit(current_date, retiree.monthly_savings, description: "Monthly Savings")
+      amount = retiree.monthly_savings
+      return if amount.zero?
+      add_transactions savings_account.credit(current_date, amount, description: "Monthly Savings")
     end
 
     def simulate_account_growth
