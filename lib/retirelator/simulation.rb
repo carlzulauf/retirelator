@@ -133,18 +133,45 @@ module Retirelator
 
     def simulate_month
       simulate_account_growth
+      extra_income = payout_fixed_incomes
       if current_date >= retiree.retirement_date
-        withdraw_monthly_allowance
+        extra_income = withdraw_monthly_allowance(extra_income)
       else
         apply_monthly_salary
         simulate_monthly_401k
         simulate_monthly_savings
       end
+      save_extra_income(extra_income) if extra_income.positive?
     end
 
-    def withdraw_monthly_allowance
+    def save_extra_income(amount)
+      add_transactions savings_account.credit(
+        current_date,
+        amount,
+        description: "Unused Fixed Income"
+      )
+    end
+
+    def payout_fixed_incomes
+      amount = 0
+      fixed_incomes.each do |account|
+        transactions = account.pay(current_date, current_tax_year.income)
+        add_transactions transactions
+        transactions.each { |t| amount += t.net_amount }
+      end
+      amount
+    end
+
+    def withdraw_monthly_allowance(extra_income = 0)
       allowance = (retiree.monthly_allowance * current_tax_year.ppp).round(2)
-      if savings_account.balance.positive?
+      if extra_income > allowance
+        extra_income -= allowance
+        allowance = 0
+      else
+        allowance -= extra_income
+        extra_income = 0
+      end
+      if allowance.positive? && savings_account.balance.positive?
         from_savings = [allowance, savings_account.balance].min
         add_transactions savings_account.debit(current_date, from_savings, description: "Monthly Allowance") if from_savings.positive?
         allowance -= from_savings
@@ -161,6 +188,7 @@ module Retirelator
           income: current_tax_year.income,
         )
       end
+      extra_income
     end
 
     def apply_monthly_salary

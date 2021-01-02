@@ -74,19 +74,29 @@ module Retirelator
   end
 
   def self.from_params(params)
-    params = default_params.merge(params.symbolize_keys)
+    params = default_params.merge(params.deep_symbolize_keys)
     retiree = retiree_params(params)
     config = configuration_params(params)
     savings_account = SavingsAccount.new(balance: params[:savings_balance])
     ira_account     = IraAccount.new(balance: params[:ira_balance])
     roth_account    = RothAccount.new(balance: params[:roth_balance])
+    fixed_incomes   = fixed_incomes_from_params(params[:fixed_incomes], retiree)
     Simulation.new(
       retiree:          retiree,
       configuration:    config,
       savings_account:  savings_account,
       ira_account:      ira_account,
       roth_account:     roth_account,
+      fixed_incomes:    fixed_incomes,
     )
+  end
+
+  def self.fixed_incomes_from_params(accounts_params, retiree)
+    return [] if accounts_params.blank?
+    accounts_params.map do |account|
+      account[:start_date] ||= retiree.retirement_date
+      FixedIncome.new(account)
+    end
   end
 
   def self.to_params(simulation)
