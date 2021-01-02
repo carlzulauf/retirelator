@@ -133,7 +133,7 @@ module Retirelator
 
     def simulate_month
       simulate_account_growth
-      if current_date > retiree.retirement_date
+      if current_date >= retiree.retirement_date
         withdraw_monthly_allowance
       else
         apply_monthly_salary
