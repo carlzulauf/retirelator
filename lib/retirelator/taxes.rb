@@ -19,7 +19,7 @@ module Retirelator
     def inflate(ratio, tax_year = year + 1)
       self.class.new(
         type: type,
-        year: year,
+        year: tax_year,
         brackets: brackets.map { |b| b.inflate(ratio) }
       )
     end
@@ -49,6 +49,10 @@ module Retirelator
           @current_bracket_index += 1
         end
       end
+    end
+
+    def applied
+      brackets.sum(&:applied)
     end
 
     private

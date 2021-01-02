@@ -3,7 +3,7 @@ module Retirelator
     option :start_date, Types::JSON::Date, default: -> { Date.today }
     option :retiree, Types::Retiree, default: -> { Retiree.new }
     option :configuration, Types::SimulationConfiguration, default: -> { SimulationConfiguration.new }
-    option :tax_years, Types::TaxYears, default: -> { [starting_tax_year] }
+    option :tax_years, Types::TaxYears, default: -> { [] }
     option :ira_account, Types::IraAccount, default: -> { starting_ira }
     option :savings_account, Types::SavingsAccount, default: -> { starting_savings }
     option :roth_account, Types::RothAccount, default: -> { starting_roth }
@@ -281,10 +281,6 @@ module Retirelator
 
     def starting_roth
       RothAccount.new(balance: 0)
-    end
-
-    def starting_tax_year
-      TaxYear.new(year: Date.today.year)
     end
   end
 end

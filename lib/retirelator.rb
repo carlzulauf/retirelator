@@ -41,6 +41,7 @@ module Retirelator
   def self.save(simulation, path)
     if File.directory?(path)
       save_json(simulation, File.join(path, "simulation.json"))
+      save_csv(simulation.tax_years, File.join(path, "tax_years.csv"))
       save_csv(simulation.transactions, File.join(path, "transactions.csv"))
       save_csv(simulation.tax_transactions, File.join(path, "taxes.csv"))
       save_csv(simulation.savings_transactions, File.join(path, "savings.csv"))
@@ -53,7 +54,7 @@ module Retirelator
 
   def self.save_csv(collection, path)
     CSV.open(path, "w") do |csv|
-      collection.each_with_index do |transaction, i|
+      collection.flat_map.each_with_index do |transaction, i|
         row = transaction.as_csv
         csv << row.keys if i == 0
         csv << row.values.map { |v| v.to_s.presence }

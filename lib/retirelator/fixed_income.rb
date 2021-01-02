@@ -37,7 +37,7 @@ module Retirelator
 
     def inflate(date, ratio)
       return self if date < start_date
-      @monthly_income = monthly_income * ratio
+      @monthly_income = (monthly_income * ratio).round(2)
       self
     end
 

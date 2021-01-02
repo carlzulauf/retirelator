@@ -11,8 +11,17 @@ module Retirelator
         year:           tax_year,
         income:         income.inflate(inflation_ratio, tax_year),
         capital_gains:  capital_gains.inflate(inflation_ratio, tax_year),
-        ppp:            ppp * inflation_ratio,
+        ppp:            (ppp * inflation_ratio).round(6),
       )
+    end
+
+    def as_csv
+      {
+        "Year"                  => year,
+        "PPP"                   => ppp,
+        "Income Applied"        => income.applied,
+        "Capital Gains Applied" => capital_gains.applied,
+      }
     end
 
     private
