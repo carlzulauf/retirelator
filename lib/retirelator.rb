@@ -56,7 +56,7 @@ module Retirelator
       collection.each_with_index do |transaction, i|
         row = transaction.as_csv
         csv << row.keys if i == 0
-        csv << row.values.map(&:to_s)
+        csv << row.values.map { |v| v.to_s.presence }
       end
     end
   end
