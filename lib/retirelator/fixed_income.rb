@@ -31,7 +31,7 @@ module Retirelator
 
     def pay_tax(amount, income_tax)
       return [[], amount] unless taxable
-      transactions = income_tax.apply(amount)
+      transactions = income_tax.apply(amount, account: name, description: "Fixed Income Payment")
       [transactions, amount - transactions.sum(&:total)]
     end
 
