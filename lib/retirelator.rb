@@ -75,7 +75,7 @@ module Retirelator
 
   def self.from_params(params)
     params = default_params.merge(params.deep_symbolize_keys)
-    retiree = retiree_params(params)
+    retiree = Retiree.new(retiree_params(params))
     config = configuration_params(params)
     savings_account = SavingsAccount.new(balance: params[:savings_balance])
     ira_account     = IraAccount.new(balance: params[:ira_balance])

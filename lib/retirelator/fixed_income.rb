@@ -3,7 +3,12 @@ module Retirelator
     option :name, Types::Strict::String, default: -> { "Fixed Income Account" }
     option :start_date, Types::JSON::Date, default: -> { Date.today }
     option :stop_date, Types::JSON::Date.optional, default: -> { nil }
-    option :taxable, Types::Strict::Bool, default: -> { false }
+
+    # Are withdrawals taxed as income?
+    option :taxable, Types::Strict::Bool, default: -> { true }
+
+    # Indexed for inflation?
+    option :indexed, Types::Strict::Bool, default: -> { true }
 
     decimal :monthly_income, default: -> { 0 }
 
@@ -30,7 +35,8 @@ module Retirelator
       [transactions, amount - transactions.sum(&:total)]
     end
 
-    def inflate(ratio)
+    def inflate(date, ratio)
+      return self if date < start_date
       @monthly_income = monthly_income * ratio
       self
     end

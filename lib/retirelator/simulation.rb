@@ -93,7 +93,14 @@ module Retirelator
       ira_contribution
       roth_contribution
       convert_to_roth
+      inflate_fixed_incomes
       tax_years << current_tax_year.next_year(configuration.inflation_ratio)
+    end
+
+    def inflate_fixed_incomes
+      fixed_incomes.each do |account|
+        account.inflate(current_date, configuration.inflation_ratio)
+      end
     end
 
     def ira_contribution
