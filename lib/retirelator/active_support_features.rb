@@ -10,5 +10,8 @@ require "active_support/core_ext/enumerable" unless [].respond_to?(:index_by)
 # For Array#from
 require "active_support/core_ext/array/access" unless [].respond_to?(:from)
 
+# For Array#wrap
+require "active_support/core_ext/array/wrap" unless Array.respond_to?(:wrap)
+
 # Numeric #days, #months, #years, etc
 require "active_support/core_ext/integer/time" unless 0.respond_to?(:years)

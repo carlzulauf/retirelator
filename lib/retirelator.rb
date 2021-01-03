@@ -54,10 +54,12 @@ module Retirelator
 
   def self.save_csv(collection, path)
     CSV.open(path, "w") do |csv|
-      collection.flat_map.each_with_index do |transaction, i|
-        row = transaction.as_csv
-        csv << row.keys if i == 0
-        csv << row.values.map { |v| v.to_s.presence }
+      collection.each_with_index do |transaction, i|
+        rows = Array.wrap(transaction.as_csv)
+        csv << rows.first.keys if i == 0
+        rows.each do |row|
+          csv << row.values.map { |v| v.to_s.presence }
+        end
       end
     end
   end

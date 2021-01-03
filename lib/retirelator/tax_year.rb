@@ -16,42 +16,55 @@ module Retirelator
     end
 
     def as_csv
-      {
-        "Year"                  => year,
-        "PPP"                   => ppp,
-        "Income Applied"        => income.applied,
-        "Capital Gains Applied" => capital_gains.applied,
-      }
+      income.brackets.map { |bracket| bracket_as_csv(bracket, "Income") } +
+      capital_gains.brackets.map { |bracket| bracket_as_csv(bracket, "Capital Gains") }
     end
 
     private
 
+    def bracket_as_csv(bracket, type)
+      {
+        "Year"      => year,
+        "PPP"       => ppp,
+        "Type"      => type,
+        "From"      => bracket.from,
+        "To"        => finite(bracket.to),
+        "Rate"      => bracket.rate,
+        "Applied"   => bracket.applied,
+        "Remaining" => finite(bracket.remaining),
+      }
+    end
+
+    def finite(number)
+      number.finite? ? number : nil
+    end
+
     def default_income_tax
-      # last known single filer rates in USA
+      # https://taxfoundation.org/2021-tax-brackets/#brackets
       Taxes.new(
         type: :income,
         year: year,
         brackets: [
-          {                 to:   9_875,  rate: 10 },
-          { from:   9_875,  to:  40_125,  rate: 12 },
-          { from:  40_125,  to:  85_525,  rate: 22 },
-          { from:  85_525,  to: 163_200,  rate: 24 },
-          { from: 163_200,  to: 207_350,  rate: 32 },
-          { from: 207_350,  to: 518_400,  rate: 35 },
-          { from: 518_400,                rate: 37 },
+          {                 to:   9_950,  rate: 10 },
+          { from:   9_950,  to:  40_525,  rate: 12 },
+          { from:  40_525,  to:  86_375,  rate: 22 },
+          { from:  86_375,  to: 164_925,  rate: 24 },
+          { from: 164_925,  to: 209_425,  rate: 32 },
+          { from: 209_425,  to: 523_600,  rate: 35 },
+          { from: 523_600,                rate: 37 },
         ]
       )
     end
 
     def default_capital_gains
-      # last known single filer rates in USA
+      # https://taxfoundation.org/2021-tax-brackets/#capgains
       Taxes.new(
         type: :capital_gains,
         year: year,
         brackets: [
-          {                 to:  39_375,  rate: 0  },
-          { from: 39_375,   to: 434_550,  rate: 15 },
-          { from: 434_550,                rate: 20 },
+          {                 to:  40_400,  rate: 0  },
+          { from: 40_400,   to: 445_850,  rate: 15 },
+          { from: 445_850,                rate: 20 },
         ]
       )
     end
