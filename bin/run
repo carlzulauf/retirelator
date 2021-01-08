@@ -8,12 +8,19 @@ if ARGV[0].blank?
   exit
 end
 
-save_name = ARGV[1].presence || File.basename(ARGV[0], '.yml')
-save_path = File.join(ROOT_DIR, "simulations", save_name)
-FileUtils.mkdir_p(save_path)
+SIM_SAVE_NAME = ARGV[1].presence || File.basename(ARGV[0], '.yml')
+SIM_SAVE_PATH = File.join(ROOT_DIR, "simulations", File.basename(ARGV[0], '.yml'))
+CREDENTIALS_PATH = File.join(ROOT_DIR, "config", "credentials.json")
+
+FileUtils.mkdir_p(SIM_SAVE_PATH)
 simulation = Retirelator.from_params YAML.load_file(ARGV[0])
-puts "Saving initial simuation to #{save_path}"
-Retirelator.save(simulation, save_path)
+puts "Saving initial simuation to #{SIM_SAVE_PATH}"
+Retirelator.save(simulation, SIM_SAVE_PATH)
 simulation.simulate!
-puts "Saving completed simuation to #{save_path}"
-Retirelator.save(simulation, save_path)
+puts "Saving completed simuation to #{SIM_SAVE_PATH}"
+Retirelator.save(simulation, SIM_SAVE_PATH)
+
+if File.exist?(CREDENTIALS_PATH)
+  require "retirelator/google_sheet_writer"
+  Retirelator::GoogleSheetWriter.new.write_simulation(simulation)
+end

@@ -24,6 +24,10 @@ module Retirelator
       match = ([percent_401k_contribution, max_percent_401k_match].min / 100) * (percent_401k_match / 100)
       base_rate + match
     end
+
+    def as_csv
+      attributes.map { |k, v| { "Config Key" => k.to_s, "Value" => v.to_s } }
+    end
   end
 
   Types.register_struct(Retiree)

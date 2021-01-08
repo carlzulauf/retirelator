@@ -41,6 +41,10 @@ module Retirelator
     #   daily_ratio(investment_growth_rate)
     # end
 
+    def as_csv
+      attributes.map { |k, v| { "Config Key" => k.to_s, "Value" => v.to_s } }
+    end
+
     private
 
     def annual_ratio(annual_rate)
