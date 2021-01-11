@@ -24,7 +24,6 @@ module Retirelator
       puts "Spreadsheet URL: https://docs.google.com/spreadsheets/d/#{id}"
       update_sheet_properties(id, sheets)
       clear_values(id, sheets)
-      binding.pry
       write_values(id, sheets)
     end
 
@@ -102,7 +101,8 @@ module Retirelator
 
     def build_sheets(simulation)
       {
-        "Configuration"         => [simulation.retiree, simulation.configuration],
+        "Configuration"         => simulation.config_info,
+        "Monthly Balances"      => simulation.monthly_balances,
         "All Transactions"      => simulation.transactions,
         "Tax Transactions"      => simulation.tax_transactions,
         "Tax Years"             => simulation.tax_years,

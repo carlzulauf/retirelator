@@ -1,5 +1,10 @@
 module Retirelator
   class Simulation < DecimalStruct
+    class CsvRow < Struct.new(:data)
+      def as_csv
+        data
+      end
+    end
     option :start_date, Types::JSON::Date, default: -> { Date.today }
     option :retiree, Types::Retiree, default: -> { Retiree.new }
     option :configuration, Types::SimulationConfiguration, default: -> { SimulationConfiguration.new }
@@ -81,6 +86,47 @@ module Retirelator
 
     def roth_transactions
       account_transactions roth_account
+    end
+
+    def monthly_balances
+      keys = Set.new
+      balances_by_date = {}
+      transactions.each do |t|
+        balances_by_date[t.date] ||= { "Date" => t.date }
+        keys.each { |k| balances_by_date[t.date][k] ||= nil }
+        next if t.balance.zero? && !keys.member?(t.account)
+        keys << t.account
+        balances_by_date[t.date][t.account] = t.balance
+      end
+      balances = balances_by_date.values
+      # fill in missing balances
+      balances.each_with_index do |date, i|
+        keys.each do |key|
+          date[key] = balances[i - 1][key] || 0 if date[key].blank? && i > 0
+        end
+      end
+      balances.map { |row| CsvRow.new(row) }
+    end
+
+    def config_info
+      spacer = { "Config Key" => "", "Value" => "" }
+      [].tap do |info|
+        retiree.as_csv.each { |row| info << CsvRow.new(row) }
+        info << CsvRow.new(spacer)
+        configuration.as_csv.each { |row| info << CsvRow.new(row) }
+        info << CsvRow.new(spacer)
+        info << CsvRow.new("Config Key" => "Starting Balances", "Value" => "")
+        accounts.each { |a| info << CsvRow.new("Config Key" => a.name, "Value" => a.starting_balance) }
+        fixed_incomes.each do |fa|
+          info << CsvRow.new(spacer)
+          info << CsvRow.new("Config Key" => "Fixed Income", "Value" => fa.name)
+          info << CsvRow.new("Config Key" => "Start Date", "Value" => fa.start_date)
+          info << CsvRow.new("Config Key" => "Stop Date", "Value" => fa.stop_date)
+          info << CsvRow.new("Config Key" => "Monthly Income", "Value" => fa.starting_monthly_income)
+          info << CsvRow.new("Config Key" => "Taxable", "Value" => fa.taxable)
+          info << CsvRow.new("Config Key" => "Indexed for Inflation", "Value" => fa.indexed)
+        end
+      end
     end
 
     private

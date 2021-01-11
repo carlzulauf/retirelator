@@ -11,6 +11,7 @@ module Retirelator
     option :indexed, Types::Strict::Bool, default: -> { true }
 
     decimal :monthly_income, default: -> { 0 }
+    decimal :starting_monthly_income, default: -> { monthly_income }
 
     def pay(date, income_tax)
       return [] if date < start_date

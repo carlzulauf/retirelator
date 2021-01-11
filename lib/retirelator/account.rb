@@ -2,6 +2,7 @@ module Retirelator
   class Account < DecimalStruct
     option :name, default: -> { default_name }
     decimal :balance, default: -> { 0 }
+    decimal :starting_balance, default: -> { balance }
 
     def grow(date, ratio, capital_gains: nil, income: nil, income_ratio: 0)
       gross = (balance * (ratio - 1)).round(2)
