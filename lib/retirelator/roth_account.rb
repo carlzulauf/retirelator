@@ -31,7 +31,7 @@ module Retirelator
         income: income,
         withhold_from: withhold_from
       )
-      contribution = credit(date, distribution.first.net_amount,
+      contribution = credit(date, distribution.first.net_amount.abs,
         description: "Roth Conversion Contribution"
       )
       distribution + contribution
