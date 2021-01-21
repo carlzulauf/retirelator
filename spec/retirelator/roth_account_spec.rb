@@ -69,7 +69,7 @@ describe Retirelator::RothAccount do
         ira, savings, roth = subject
         expect(ira.gross_amount).to eq(ira.net_amount)
         expect(savings.account).to eq("Savings Account")
-        expect(roth.gross_amount).to eq(ira.gross_amount)
+        expect(roth.gross_amount.abs).to eq(ira.gross_amount.abs)
       end
 
       context "that has insuficient balance for withholding" do
