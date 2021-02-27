@@ -147,7 +147,7 @@ module Retirelator
       credentials = authorizer.get_credentials(user_id)
       return credentials if credentials.present?
       auth_url = authorizer.get_credentials(base_url: auth_urn)
-      puts "Login via this URL and paste resulting code:", url
+      puts "Login via this URL and paste resulting code: #{auth_url.inspect}"
       code = STDIN.gets.chomp
       authorizer.get_and_store_credentials_from_code(
         user_id: user_id, code: code, base_url: auth_urn

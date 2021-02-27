@@ -78,7 +78,7 @@ module Retirelator
 
   def self.from_params(params)
     params = default_params.merge(params.deep_symbolize_keys)
-    retiree = Retiree.new(retiree_params(params))
+    retiree = Retiree.new(**retiree_params(params))
     config = configuration_params(params)
     savings_account = SavingsAccount.new(balance: params[:savings_balance])
     ira_account     = IraAccount.new(balance: params[:ira_balance])
@@ -98,7 +98,7 @@ module Retirelator
     return [] if accounts_params.blank?
     accounts_params.map do |account|
       account[:start_date] ||= retiree.retirement_date
-      FixedIncome.new(account)
+      FixedIncome.new(**account)
     end
   end
 

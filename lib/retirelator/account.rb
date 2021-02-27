@@ -9,7 +9,6 @@ module Retirelator
       taxes = apply_tax(gross, capital_gains, taxable_gains, 1 - income_ratio, **tax_info("Growth"))
       taxes.concat apply_tax(gross, income, taxable_gains, income_ratio, **tax_info("Growth"))
       net = gross - taxes.sum(&:total)
-      binding.pry if $breaker
       @balance += net
       build_transaction("Growth", date, gross, net, taxes)
     end
