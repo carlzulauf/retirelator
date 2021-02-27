@@ -3,7 +3,7 @@ describe Retirelator::RothAccount do
   let(:attributes) do
     { balance: 30_000 }
   end
-  subject { described_class.new(attributes) }
+  subject { described_class.new(**attributes) }
 
   describe "#grow" do
     it "grows the account with no tax transactions" do
@@ -43,7 +43,7 @@ describe Retirelator::RothAccount do
     let(:ira_account) { Retirelator::IraAccount.new(balance: 100_000) }
     let(:extra) { {} }
     subject do
-      described_class.new(attributes).convert_from(
+      described_class.new(**attributes).convert_from(
         ira_account, Date.today, 10_000, income: income_taxes, **extra
       )
     end

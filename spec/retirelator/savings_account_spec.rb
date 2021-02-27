@@ -31,7 +31,7 @@ describe Retirelator::SavingsAccount do
       )
     end
     let(:date) { Date.today }
-    subject { described_class.new(attributes) }
+    subject { described_class.new(**attributes) }
 
     describe "#grow" do
       let(:growth_rate) { 1.075 }

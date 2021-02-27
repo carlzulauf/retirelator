@@ -17,7 +17,7 @@ describe Retirelator::TaxYear do
     end
 
     context "with valid parameters" do
-      subject { described_class.new(valid_attributes) }
+      subject { described_class.new(**valid_attributes) }
 
       let(:valid_attributes) do
         {

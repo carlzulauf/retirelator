@@ -18,7 +18,7 @@ describe Retirelator::Transaction do
     subject { described_class }
 
     it "can be initialized with the required attributes" do
-      subject.new(required_attributes)
+      subject.new(**required_attributes)
     end
 
     it "fails to initialize without the required attributes" do
@@ -26,7 +26,7 @@ describe Retirelator::Transaction do
     end
 
     it "defaults to no tax transactions" do
-      transaction = subject.new(required_attributes)
+      transaction = subject.new(**required_attributes)
       expect(transaction.tax_transactions).to be_a(Array)
       expect(transaction.tax_transactions).to be_empty
     end
@@ -51,7 +51,7 @@ describe Retirelator::Transaction do
         )
       ]
       transaction = subject.new(
-        required_attributes.merge(tax_transactions: tax_transactions)
+        **required_attributes.merge(tax_transactions: tax_transactions)
       )
       expect(transaction.tax_transactions).to be_a(Array)
       expect(transaction.tax_transactions).to eq(tax_transactions)
@@ -60,7 +60,7 @@ describe Retirelator::Transaction do
 
   describe "instance methods" do
     let(:attributes) { required_attributes }
-    subject { described_class.new(attributes) }
+    subject { described_class.new(**attributes) }
 
     it "returns true for #credit?" do
       expect(subject.credit?).to eq(true)

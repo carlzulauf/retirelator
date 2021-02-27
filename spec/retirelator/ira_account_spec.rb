@@ -3,10 +3,11 @@ describe Retirelator::IraAccount do
   let(:attributes) do
     { balance: 100_000 }
   end
-  subject { described_class.new(attributes) }
+  subject { described_class.new(**attributes) }
 
   describe "#grow" do
     it "grows the account with no tax transactions" do
+      # $breaker = true
       transaction = subject.grow(Date.today, 1.1.to_d).first
       expect(transaction.gross_amount).to eq(10_000)
       expect(transaction.net_amount).to eq(10_000)

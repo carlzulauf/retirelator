@@ -69,7 +69,7 @@ module Retirelator
   end
 
   def self.open_json(json)
-    Simulation.new parse(json)
+    Simulation.new **parse(json)
   end
 
   def self.parse(json)

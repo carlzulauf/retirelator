@@ -36,7 +36,7 @@ shared_context "with a valid simulation" do
     }
   end
 
-  let(:simulation) { Retirelator::Simulation.new(simulation_attributes) }
+  let(:simulation) { Retirelator::Simulation.new(**simulation_attributes) }
 end
 
 # Uncomment this to re-generate spec/support/valid_simulation.json

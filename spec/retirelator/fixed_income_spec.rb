@@ -17,7 +17,7 @@ describe Retirelator::FixedIncome do
     )
   end
 
-  subject { described_class.new(attributes) }
+  subject { described_class.new(**attributes) }
 
   context "with no attributes" do
     it "can be initialized with defaults" do

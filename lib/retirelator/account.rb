@@ -6,16 +6,17 @@ module Retirelator
 
     def grow(date, ratio, capital_gains: nil, income: nil, income_ratio: 0)
       gross = (balance * (ratio - 1)).round(2)
-      taxes = apply_tax(gross, capital_gains, taxable_gains, 1 - income_ratio, tax_info("Growth"))
-      taxes.concat apply_tax(gross, income, taxable_gains, income_ratio, tax_info("Growth"))
+      taxes = apply_tax(gross, capital_gains, taxable_gains, 1 - income_ratio, **tax_info("Growth"))
+      taxes.concat apply_tax(gross, income, taxable_gains, income_ratio, **tax_info("Growth"))
       net = gross - taxes.sum(&:total)
+      binding.pry if $breaker
       @balance += net
       build_transaction("Growth", date, gross, net, taxes)
     end
 
     def debit(date, amount, income: nil, penalty: 0.to_d, description: "Debit", withhold_from: nil)
       withholding = (amount * (penalty / 100)).round(2)
-      taxes = apply_tax(amount, income, taxable_distributions, tax_info(description))
+      taxes = apply_tax(amount, income, taxable_distributions, **tax_info(description))
       withholding += taxes.sum(&:total)
       @balance -= amount
       if withhold_from
@@ -39,7 +40,7 @@ module Retirelator
     def net_debit(date, amount, income:, penalty: 0.to_d)
       if taxable_distributions
         description = "Debit (Net #{amount})"
-        taxes = income.net_debit(amount, tax_info(description))
+        taxes = income.net_debit(amount, **tax_info(description))
         gross = taxes.sum(&:gross_amount)
         net   = taxes.sum(&:net_amount)
         net  -= (gross * (penalty / 100)).round(2)
@@ -51,7 +52,7 @@ module Retirelator
     end
 
     def credit(date, amount, income: nil, description: "Credit")
-      taxes = apply_tax(amount * -1, income, deductible_contributions, tax_info(description))
+      taxes = apply_tax(amount * -1, income, deductible_contributions, **tax_info(description))
       @balance += amount
       build_transaction(description, date, amount, amount, taxes)
     end

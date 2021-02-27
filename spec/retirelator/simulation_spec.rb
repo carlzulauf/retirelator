@@ -13,7 +13,7 @@ describe Retirelator::Simulation do
     end
 
     it "can be initialized with valid attributes" do
-      obj = subject.new(simulation_attributes)
+      obj = subject.new(**simulation_attributes)
       expect(obj).to be_a(described_class)
       simulation_attributes.each do |key, value|
         expect(obj.send(key)).to eq(value)
@@ -47,7 +47,7 @@ describe Retirelator::Simulation do
       end
 
       it "can be initialized from Transaction instances" do
-        obj = subject.new(simulation_attributes.merge(transactions: transactions))
+        obj = subject.new(**simulation_attributes.merge(transactions: transactions))
         expect(obj.transactions.count).to eq(2)
         expect(obj.transactions[0].gross_amount).to eq(10_000)
         expect(obj.transactions[1].balance).to eq(12_000)
@@ -56,7 +56,7 @@ describe Retirelator::Simulation do
       it "can be initialized from transaction hashes" do
         hashes = transactions.map(&:as_json)
         expect(hashes[0]).to be_a(Hash)
-        obj = subject.new(simulation_attributes.merge(transactions: hashes))
+        obj = subject.new(**simulation_attributes.merge(transactions: hashes))
         expect(obj.transactions.count).to eq(2)
         expect(obj.transactions[0]).to be_a(Retirelator::Transaction)
         expect(obj.transactions[0].date).to eq(Date.today)
@@ -66,7 +66,7 @@ describe Retirelator::Simulation do
   end
 
   describe "instance methods" do
-    subject { described_class.new(simulation_attributes) }
+    subject { described_class.new(**simulation_attributes) }
 
     describe "#as_json" do
       it "serializes nested objects into a JSON-like document" do
@@ -78,7 +78,7 @@ describe Retirelator::Simulation do
 
       it "returns a document that can loaded using .new" do
         doc = subject.as_json
-        obj = described_class.new(doc)
+        obj = described_class.new(**doc)
         expect(obj.retiree.name).to eq("Pat")
         expect(obj.roth_account.balance).to eq(25_000)
         expect(obj.savings_account.balance).to eq(75_000)
@@ -90,7 +90,7 @@ describe Retirelator::Simulation do
       it "returns a json document that can be parsed and loaded with .new" do
         json = subject.to_json
         doc = JSON.parse(json, symbolize_names: true)
-        obj = described_class.new(doc)
+        obj = described_class.new(**doc)
         expect(obj.retiree.name).to eq("Pat")
         expect(obj.roth_account.balance).to eq(25_000)
         expect(obj.savings_account.balance).to eq(75_000)
