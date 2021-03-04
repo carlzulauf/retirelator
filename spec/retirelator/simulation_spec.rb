@@ -97,5 +97,29 @@ describe Retirelator::Simulation do
         expect(obj.ira_account.balance).to eq(500_000)
       end
     end
+
+    context "with a completed simulation" do
+      subject { simulation.tap(&:simulate!) }
+
+      describe "#as_json" do
+        it "can still serialize the simulation" do
+          doc = subject.as_json
+          expect(doc).to be_a(Hash)
+          expect(doc.keys).to be_many
+          expect(doc[:retiree]).to be_a(Hash)
+          expect(doc[:transactions]).to be_many
+          expect(doc[:transactions].first).to be_a(Hash)
+        end
+
+        it "returns a doc that can be loaded using .new" do
+          doc = subject.as_json
+          obj = described_class.new(**doc)
+          expect(obj.retiree.name).to eq("Pat")
+          expect(obj.transactions).to be_many
+          expect(obj.transactions.first).to be_a(Retirelator::Transaction)
+        end
+      end
+    end
   end
+
 end

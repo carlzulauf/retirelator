@@ -16,6 +16,8 @@ module Retirelator
     option :transactions, Types::Transactions, default: -> { Array.new }
     option :tax_transactions, Types::TaxTransactions, default: -> { Array.new }
 
+    runtime_option :logger, default: -> { Logger.new(STDOUT) }
+
     def accounts
       [savings_account, ira_account, roth_account]
     end
@@ -44,23 +46,25 @@ module Retirelator
     end
 
     def simulate!
+      logger.info "Starting simulation"
       tax_ytd_income
       create_opening_transactions
       loop do
         next_month = current_date.advance(months: 1)
-        puts "Advancing to #{next_month}"
+        logger.info "Advancing to #{next_month}"
         advance_tax_year unless current_tax_year.year == next_month.year
         @current_date = next_month
         simulate_month
         if current_date > retiree.target_death_date
-          puts "Congrats, you made it to to your target death date without going broke."
+          logger.warn "Congrats, you made it to to your target death date without going broke."
           break
         end
         if accounts.none? { |a| a.balance.positive? }
-          puts "You are broke on #{current_date}"
+          logger.warn "You are broke on #{current_date}"
           break
         end
       end
+      logger.info "Simulation complete"
       self
     end
 
