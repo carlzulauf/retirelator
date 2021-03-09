@@ -34,6 +34,8 @@ require "retirelator/tax_year"
 require "retirelator/simulation"
 
 module Retirelator
+  mattr_accessor :logger, default: Logger.new(STDOUT)
+
   def self.open(path)
     open_json File.read(path)
   end
@@ -77,16 +79,15 @@ module Retirelator
   end
 
   def self.from_params(params)
-    params = default_params.merge(params.deep_symbolize_keys)
-    retiree = Retiree.new(**retiree_params(params))
-    config = configuration_params(params)
+    params          = default_params.merge(params.deep_symbolize_keys)
+    retiree         = Retiree.new(**retiree_params(params))
     savings_account = SavingsAccount.new(balance: params[:savings_balance])
     ira_account     = IraAccount.new(balance: params[:ira_balance])
     roth_account    = RothAccount.new(balance: params[:roth_balance])
     fixed_incomes   = fixed_incomes_from_params(params[:fixed_incomes], retiree)
     Simulation.new(
       retiree:          retiree,
-      configuration:    config,
+      configuration:    configuration_params(params),
       savings_account:  savings_account,
       ira_account:      ira_account,
       roth_account:     roth_account,
@@ -130,7 +131,7 @@ module Retirelator
 
   def self.configuration_params(params)
     params.slice(*%i{
-      description start_date
+      noise description start_date
       inflation_rate salary_growth_rate
       investment_growth_rate short_term_gains_ratio
     })

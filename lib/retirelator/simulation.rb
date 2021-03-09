@@ -16,7 +16,7 @@ module Retirelator
     option :transactions, Types::Transactions, default: -> { Array.new }
     option :tax_transactions, Types::TaxTransactions, default: -> { Array.new }
 
-    runtime_option :logger, default: -> { Logger.new(STDOUT) }
+    runtime_option :logger, default: -> { Retirelator.logger }
 
     def accounts
       [savings_account, ira_account, roth_account]
