@@ -26,6 +26,7 @@ require "retirelator/retiree"
 require "retirelator/simulation_configuration"
 require "retirelator/tax_bracket"
 require "retirelator/tax_transaction"
+require "retirelator/scaled_noise_factory"
 
 # depend on at least one other type
 require "retirelator/transaction"
@@ -85,6 +86,7 @@ module Retirelator
     ira_account     = IraAccount.new(balance: params[:ira_balance])
     roth_account    = RothAccount.new(balance: params[:roth_balance])
     fixed_incomes   = fixed_incomes_from_params(params[:fixed_incomes], retiree)
+    noiser          = ScaledNoiseFactory.new(**noiser_from_params(params))
     Simulation.new(
       retiree:          retiree,
       configuration:    configuration_params(params),
@@ -92,6 +94,7 @@ module Retirelator
       ira_account:      ira_account,
       roth_account:     roth_account,
       fixed_incomes:    fixed_incomes,
+      noiser:           noiser,
     )
   end
 
@@ -105,13 +108,14 @@ module Retirelator
 
   def self.to_params(simulation)
     jsonish = simulation.as_json
-    retiree_params(jsonish[:retiree]).merge(
-      configuration_params(jsonish[:configuration])
-    ).merge(
-      ira_balance:      jsonish.dig(:ira_account,     :balance),
-      roth_balance:     jsonish.dig(:roth_account,    :balance),
-      savings_balance:  jsonish.dig(:savings_account, :balance),
-    )
+    retiree_params(jsonish[:retiree])
+      .merge(configuration_params(jsonish[:configuration]))
+      .merge(noiser_to_params(jsonish[:noiser]))
+      .merge(
+        ira_balance:      jsonish.dig(:ira_account,     :balance),
+        roth_balance:     jsonish.dig(:roth_account,    :balance),
+        savings_balance:  jsonish.dig(:savings_account, :balance),
+      )
   end
 
   def self.default_params
@@ -129,9 +133,17 @@ module Retirelator
     })
   end
 
+  def self.noiser_to_params(noiser_hash)
+    { noise: noiser_hash[:noise], rand_seed: noiser_hash[:seed] }.compact
+  end
+
+  def self.noiser_from_params(params)
+    { noise: params[:noise], seed: params[:rand_seed] }.compact
+  end
+
   def self.configuration_params(params)
     params.slice(*%i{
-      noise description start_date
+      description start_date
       inflation_rate salary_growth_rate
       investment_growth_rate short_term_gains_ratio
     })

@@ -15,6 +15,7 @@ module Retirelator
     option :fixed_incomes, Types::FixedIncomes, default: -> { Array.new }
     option :transactions, Types::Transactions, default: -> { Array.new }
     option :tax_transactions, Types::TaxTransactions, default: -> { Array.new }
+    option :noiser, Types::ScaledNoiseFactory, default: -> { ScaledNoiseFactory.new }
 
     runtime_option :logger, default: -> { Retirelator.logger }
 
@@ -274,12 +275,16 @@ module Retirelator
         next unless account.balance.positive?
         add_transactions account.grow(
           current_date,
-          configuration.monthly_investment_growth_ratio,
+          with_noise(configuration.monthly_investment_growth_ratio),
           capital_gains: current_tax_year.capital_gains,
           income: current_tax_year.income,
           income_ratio: configuration.short_term_gains_ratio,
         )
       end
+    end
+
+    def with_noise(original)
+      noiser.apply(original)
     end
 
     def tax_ytd_income

@@ -25,6 +25,10 @@ module Retirelator
     # amount greater than 1 is an extreme amount of noise
     decimal :noise,                     default: -> { 0 }
 
+    # Number used to seed random number generator
+    # Noise should be deterministic, meaning identical seeds should produce identical results
+    option :seed, Types::Strict::Integer, default: -> { Random.new.seed }
+
     def inflation_ratio
       (inflation_rate / 100) + 1
     end
