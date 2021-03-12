@@ -29,12 +29,12 @@ module Retirelator
     # Noise should be deterministic, meaning identical seeds should produce identical results
     option :seed, Types::Strict::Integer, default: -> { Random.new.seed }
 
-    def inflation_ratio
-      (inflation_rate / 100) + 1
+    def inflation_ratio(noise_ratio = 1)
+      ( (inflation_rate * noise_ratio) / 100 ) + 1
     end
 
-    def annual_salary_growth_ratio
-      (salary_growth_rate / 100) + 1
+    def annual_salary_growth_ratio(noise_ratio = 1)
+      ( (salary_growth_rate * noise_ratio) / 100 ) + 1
     end
 
     def monthly_investment_growth_ratio

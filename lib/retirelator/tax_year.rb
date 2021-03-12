@@ -1,14 +1,17 @@
 module Retirelator
   class TaxYear < DecimalStruct
-    option :year, Types::Strict::Integer, default: -> { Date.today.year }
+    option :year, Types::Strict::Integer
+    decimal :salary
+
     option :income, Types::Taxes, default: -> { default_income_tax }
     option :capital_gains, Types::Taxes, default: -> { default_capital_gains }
     decimal :ppp, default: -> { 1 }
 
-    def next_year(inflation_ratio)
+    def next_year(inflation_ratio:, salary_ratio:)
       tax_year = year + 1
       self.class.new(
         year:           tax_year,
+        salary:         (salary * salary_ratio).round(2),
         income:         income.inflate(inflation_ratio, tax_year),
         capital_gains:  capital_gains.inflate(inflation_ratio, tax_year),
         ppp:            (ppp * inflation_ratio).round(6),

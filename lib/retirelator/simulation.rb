@@ -28,14 +28,12 @@ module Retirelator
     end
 
     def current_tax_year
-      return create_initial_tax_year if tax_years.empty?
-      tax_years.last
+      return create_initial_tax_year unless defined?(@current_tax_year)
+      @current_tax_year
     end
 
     def current_annual_salary
-      starting_salary = retiree.salary
-      return starting_salary if years_running.zero?
-      (starting_salary * (configuration.annual_salary_growth_ratio ** years_running)).round
+      current_tax_year.salary
     end
 
     def current_monthly_salary
@@ -145,7 +143,15 @@ module Retirelator
       roth_contribution
       convert_to_roth
       inflate_fixed_incomes
-      tax_years << current_tax_year.next_year(configuration.inflation_ratio)
+      inflate_tax_year # ppp & salary too
+    end
+
+    def inflate_tax_year
+      @current_tax_year = current_tax_year.next_year(
+        inflation_ratio: configuration.inflation_ratio(noiser.rand),
+        salary_ratio: configuration.annual_salary_growth_ratio(noiser.rand)
+      )
+      tax_years << @current_tax_year
     end
 
     def inflate_fixed_incomes
@@ -275,10 +281,10 @@ module Retirelator
         next unless account.balance.positive?
         add_transactions account.grow(
           current_date,
-          with_noise(configuration.monthly_investment_growth_ratio),
+          with_noise(configuration.monthly_investment_growth_ratio), # applying noise to final ratio introduces lots of noise
           capital_gains: current_tax_year.capital_gains,
           income: current_tax_year.income,
-          income_ratio: configuration.short_term_gains_ratio,
+          income_ratio: with_noise(configuration.short_term_gains_ratio),
         )
       end
     end
@@ -307,7 +313,10 @@ module Retirelator
     end
 
     def create_initial_tax_year
-      TaxYear.new(year: current_date.year).tap { |ty| tax_years << ty }
+      TaxYear.new(year: current_date.year, salary: retiree.salary).tap do |ty|
+        @current_tax_year = ty
+        tax_years << ty
+      end
     end
 
     def create_initial_tax_transactions(account)

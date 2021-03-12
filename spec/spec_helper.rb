@@ -49,6 +49,6 @@ end
 # describe "prerequisites" do
 #   include_context "with a valid simulation"
 #   it "saves a valid simulation to spec/support" do
-#     Retirelator.save(simulation, "spec/support/valid_simulation.json")
+#     Retirelator.save(simulation, "spec/support/valid_simulation.json", pretty: true)
 #   end
 # end

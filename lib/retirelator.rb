@@ -41,7 +41,7 @@ module Retirelator
     open_json File.read(path)
   end
 
-  def self.save(simulation, path)
+  def self.save(simulation, path, **json_options)
     if File.directory?(path)
       save_json(simulation, File.join(path, "simulation.json"))
       save_csv(simulation.tax_years, File.join(path, "tax_years.csv"))
@@ -51,7 +51,7 @@ module Retirelator
       save_csv(simulation.ira_transactions, File.join(path, "ira.csv"))
       save_csv(simulation.roth_transactions, File.join(path, "roth_ira.csv"))
     else
-      save_json(simulation, path)
+      save_json(simulation, path, **json_options)
     end
   end
 
@@ -67,8 +67,9 @@ module Retirelator
     end
   end
 
-  def self.save_json(simulation, path)
-    File.write(path, simulation.to_json)
+  def self.save_json(simulation, path, pretty: false)
+    json = pretty ? JSON.pretty_generate(simulation.as_json) : simulation.to_json
+    File.write(path, json)
   end
 
   def self.open_json(json)
