@@ -15,3 +15,7 @@ require "active_support/core_ext/array/wrap" unless Array.respond_to?(:wrap)
 
 # Numeric #days, #months, #years, etc
 require "active_support/core_ext/integer/time" unless 0.respond_to?(:years)
+
+# number_to_currency and other helpers
+require "active_support/dependencies/autoload"
+require "active_support/number_helper"

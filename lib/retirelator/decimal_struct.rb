@@ -22,7 +22,7 @@ module Retirelator
     end
 
     def to_currency(decimal)
-      ActionController::Base.helpers.number_to_currency decimal
+      ActiveSupport::NumberHelper.number_to_currency decimal
     end
 
     def to_string(decimal)
