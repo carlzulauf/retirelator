@@ -29,6 +29,10 @@ module Retirelator
       from.zero?
     end
 
+    def last?
+      !to.finite?
+    end
+
     def inflate(ratio)
       inflated_from = (from * ratio).ceil
       inflated_to = numeric_to.infinite? ? numeric_to : (numeric_to * ratio).ceil

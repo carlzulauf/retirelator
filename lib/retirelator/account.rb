@@ -6,9 +6,10 @@ module Retirelator
 
     def grow(date, ratio, capital_gains: nil, income: nil, income_ratio: 0)
       gross = (balance * (ratio - 1)).round(2)
-      taxes = apply_tax(gross, capital_gains, taxable_gains, 1 - income_ratio, **tax_info("Growth"))
-      taxes.concat apply_tax(gross, income, taxable_gains, income_ratio, **tax_info("Growth"))
-      net = gross - taxes.sum(&:total)
+      desc = gross.positive? ? "Growth" : "Loss"
+      taxes = apply_tax(gross, capital_gains, taxable_gains, 1 - income_ratio, **tax_info(desc))
+      taxes.concat apply_tax(gross, income, taxable_gains, income_ratio, **tax_info(desc))
+      net = gross.positive? ? gross - taxes.sum(&:total) : gross
       @balance += net
       build_transaction("Growth", date, gross, net, taxes)
     end

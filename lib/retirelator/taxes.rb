@@ -25,6 +25,7 @@ module Retirelator
     end
 
     def apply(amount, **extra)
+      return [] if amount.zero?
       [].tap do |tax_transactions|
         loop do
           bracket     = brackets[current_bracket_index]
@@ -39,6 +40,7 @@ module Retirelator
     end
 
     def net_debit(amount, **extra)
+      return [] if amount.zero?
       [].tap do |tax_transactions|
         loop do
           bracket = brackets[current_bracket_index]

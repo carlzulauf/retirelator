@@ -13,14 +13,19 @@ SIM_SAVE_PATH = File.join(ROOT_DIR, "simulations", File.basename(ARGV[0], '.yml'
 CREDENTIALS_PATH = File.join(ROOT_DIR, "config", "credentials.json")
 
 FileUtils.mkdir_p(SIM_SAVE_PATH)
-simulation = Retirelator.from_params YAML.load_file(ARGV[0])
+params = YAML.load_file(ARGV[0])
+params.merge!(rand_seed: ENV["SEED"].to_i) if ENV["SEED"].present?
+Retirelator.logger.level = Logger::WARN
+
+simulation = Retirelator.from_params params
+puts "Seed: #{simulation.noiser.seed}"
 puts "Saving initial simuation to #{SIM_SAVE_PATH}"
 Retirelator.save(simulation, SIM_SAVE_PATH)
 simulation.simulate!
 puts "Saving completed simuation to #{SIM_SAVE_PATH}"
 Retirelator.save(simulation, SIM_SAVE_PATH)
 
-if File.exist?(CREDENTIALS_PATH)
-  require "retirelator/google_sheet_writer"
-  Retirelator::GoogleSheetWriter.new.write_simulation(simulation)
-end
+# if File.exist?(CREDENTIALS_PATH)
+#   require "retirelator/google_sheet_writer"
+#   Retirelator::GoogleSheetWriter.new.write_simulation(simulation)
+# end

@@ -27,40 +27,81 @@ describe Retirelator::SavingsAccount do
       Retirelator::Taxes.new(
         type: :capital_gains,
         year: 2020,
-        brackets: [ Retirelator::TaxBracket.new(rate: 10) ]
+        brackets: [
+          Retirelator::TaxBracket.new(rate: 10, to: 10_000),
+          Retirelator::TaxBracket.new(rate: 15, from: 10_000)
+        ]
       )
     end
     let(:date) { Date.today }
-    subject { described_class.new(**attributes) }
+    let(:instance) { described_class.new(**attributes) }
+    subject { instance }
 
     describe "#grow" do
       let(:growth_rate) { 1.075 }
+      let(:growth_options) { { capital_gains: capital_gains } }
+      subject { instance.grow(date, growth_rate, **growth_options) }
+      let(:transaction) { subject.first }
+
       it "grows the balance by the specified ratio" do
         #  balance, +7.5% growth, -10% tax rate
-        subject.grow(date, growth_rate, capital_gains: capital_gains)
-        expect(subject.balance).to eq(2_156.37)
+        expect { subject }.to change { instance.balance }.from(2020.02).to(2156.37)
       end
 
       it "creates a transaction with the expected growth amount" do
-        transactions = subject.grow(date, growth_rate, capital_gains: capital_gains)
-        expect(transactions.count).to eq(1)
-        expect(transactions[0]).to be_a(Retirelator::Transaction)
-        expect(transactions[0].gross_amount).to eq(151.50)
-        expect(transactions[0].net_amount).to eq(136.35) # -10% capital gains
+        expect(subject.count).to eq(1)
+        expect(transaction).to be_a(Retirelator::Transaction)
+        expect(transaction.gross_amount).to eq(151.50)
+        expect(transaction.net_amount).to eq(136.35) # -10% capital gains
       end
 
-      it "applies transaction amount to capital gains by default" do
-        transactions = subject.grow(date, growth_rate, capital_gains: capital_gains)
-        expect(transactions.count).to eq(1)
-        expect(transactions[0].tax_transactions.map(&:type).uniq).to eq([:capital_gains])
+      it "applies transaction amount to capital gains" do
+        expect(transaction.tax_transactions.map(&:type).uniq).to eq([:capital_gains])
       end
 
-      it "applies transaction amount to capital gains and income when ratio specified" do
-        transactions = subject.grow(date, growth_rate, capital_gains: capital_gains, income: income, income_ratio: 0.2)
-        expect(transactions.count).to eq(1)
-        taxes = transactions[0].tax_transactions.group_by(&:type)
-        expect(taxes[:income].sum(&:amount)).to eq(30.3)
-        expect(taxes[:capital_gains].sum(&:amount)).to eq(121.2)
+      context "with income tax and ratio specified" do
+        let(:growth_options) do
+          { capital_gains: capital_gains, income: income, income_ratio: 0.2 }
+        end
+
+        it "applies transaction amount to capital gains and income" do
+          expect(subject.count).to eq(1)
+          taxes = transaction.tax_transactions.group_by(&:type)
+          expect(taxes[:income].sum(&:amount)).to eq(30.3)
+          expect(taxes[:capital_gains].sum(&:amount)).to eq(121.2)
+        end
+      end
+
+      context "with a growth ratio under 1 (a loss)" do
+        let(:growth_rate) { 0.95 }
+
+        it "creates a transaction with the expected gross and net" do
+          expect(subject.count).to eq(1)
+          expect(transaction.gross_amount).to eq(-101) # debit of 5%
+          # losses are not taxable (and reduce taxable capital gains or income, see other specs)
+          #  therefore, the gross and net are the same
+          expect(transaction.net_amount).to eq(transaction.gross_amount)
+
+          # ^^^ this is all wrong
+          # TODO: fix this nonsense
+          # losses are negatively taxable. we should be paying back previously withheld taxes that are no longer due.
+        end
+
+        it "credits the transaction amount to the tax bracket" do
+          taxes, *extra = transaction.tax_transactions
+          expect(extra).to be_empty
+          expect(taxes.amount).to eq(-101)
+        end
+      end
+
+      context "with a transaction that pushes into the next tax bracket" do
+        let(:attributes) { { balance: 100_000 } } # easier math
+
+        it "has transactions from both brackets" do
+          prev = instance.grow(date, 1.09, capital_gains: capital_gains)
+          # binding.pry
+          # TODO
+        end
       end
     end
 
