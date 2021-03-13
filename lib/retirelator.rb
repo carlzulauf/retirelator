@@ -37,8 +37,21 @@ require "retirelator/simulation"
 module Retirelator
   mattr_accessor :logger, default: Logger.new(STDOUT)
 
+  # def self.open(path)
+  #   open_json File.read(path)
+  # end
+
   def self.open(path)
-    open_json File.read(path)
+    if File.directory?(path)
+      open_json(File.join(path, "simulation.json"))
+    else
+      case File.extname(path)
+      when ".json", ".js" then open_json(path)
+      when ".msgpack" then open_msgpack(path)
+      else
+        open_json(path)
+      end
+    end
   end
 
   def self.save(simulation, path, **json_options)
@@ -51,7 +64,12 @@ module Retirelator
       save_csv(simulation.ira_transactions, File.join(path, "ira.csv"))
       save_csv(simulation.roth_transactions, File.join(path, "roth_ira.csv"))
     else
-      save_json(simulation, path, **json_options)
+      case File.extname(path)
+      when ".json", ".js" then save_json(simulation, path, **json_options)
+      when ".msgpack" then save_msgpack(simulation, path)
+      else
+        save_json(simulation, path, **json_options)
+      end
     end
   end
 
@@ -65,6 +83,15 @@ module Retirelator
         end
       end
     end
+  end
+
+  def self.open_json(path)
+    load_json File.read(path)
+  end
+
+  def self.load_json(json)
+    params = JSON.parse(json, symbolize_names: true)
+    Simulation.new **params
   end
 
   def self.save_json(simulation, path, pretty: false)
@@ -83,14 +110,6 @@ module Retirelator
   def self.load_msgpack(msg)
     params = MessagePack.unpack(msg).deep_symbolize_keys
     Simulation.new **params
-  end
-
-  def self.open_json(json)
-    Simulation.new **parse(json)
-  end
-
-  def self.parse(json)
-    JSON.parse(json, symbolize_names: true)
   end
 
   def self.from_params(params)
