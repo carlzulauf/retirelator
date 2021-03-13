@@ -72,6 +72,19 @@ module Retirelator
     File.write(path, json)
   end
 
+  def self.save_msgpack(simulation, path)
+    File.write(path, MessagePack.pack(simulation.as_json))
+  end
+
+  def self.open_msgpack(path)
+    load_msgpack File.read(path)
+  end
+
+  def self.load_msgpack(msg)
+    params = MessagePack.unpack(msg).deep_symbolize_keys
+    Simulation.new **params
+  end
+
   def self.open_json(json)
     Simulation.new **parse(json)
   end

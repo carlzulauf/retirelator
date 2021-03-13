@@ -6,5 +6,6 @@ gem "pry"
 gem "pry-doc"
 gem "rspec"
 gem "google-api-client"
+gem "msgpack"
 
 gemspec

@@ -1,9 +1,9 @@
 describe Retirelator do
   subject { described_class }
 
-  describe ".open" do
+  describe ".open_json" do
     it "can open an existing simulation" do
-      simulation = Retirelator.open("spec/support/valid_simulation.json")
+      simulation = Retirelator.open_json("spec/support/valid_simulation.json")
       expect(simulation.retiree.name).to eq("Pat")
       expect(simulation.ira_account.balance).to eq(500_000)
     end

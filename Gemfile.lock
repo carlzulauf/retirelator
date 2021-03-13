@@ -84,6 +84,7 @@ GEM
     method_source (1.0.0)
     mini_mime (1.0.2)
     minitest (5.14.4)
+    msgpack (1.4.2)
     multi_json (1.15.0)
     multipart-post (2.1.1)
     os (1.1.1)
@@ -134,6 +135,7 @@ PLATFORMS
 
 DEPENDENCIES
   google-api-client
+  msgpack
   pry
   pry-doc
   retirelator!
