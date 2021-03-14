@@ -25,6 +25,10 @@ module Retirelator
       numeric_to - (applied + from)
     end
 
+    def remaining?
+      remaining.positive?
+    end
+
     def first?
       from.zero?
     end
@@ -45,7 +49,9 @@ module Retirelator
     end
 
     def creditable_remaining
-      first? ? BigDecimal::INFINITY : applied
+      return applied unless first?
+      # transactions that credit first bracket to negative should be split in two
+      applied.positive? ? applied : BigDecimal::INFINITY
     end
 
     def credit(amount)
@@ -55,7 +61,8 @@ module Retirelator
     end
 
     def debit(amount)
-      debit_amount = [remaining, amount].min
+      # if bracket is negative, don't add more than needed to bring to zero
+      debit_amount = [applied.negative? ? applied.abs : remaining, amount].min
       @applied += debit_amount
       amount - debit_amount
     end

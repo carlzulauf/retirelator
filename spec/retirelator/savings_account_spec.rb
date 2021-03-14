@@ -78,31 +78,38 @@ describe Retirelator::SavingsAccount do
         it "creates a transaction with the expected gross and net" do
           expect(subject.count).to eq(1)
           expect(transaction.gross_amount).to eq(-101) # debit of 5%
-          # losses are not taxable (and reduce taxable capital gains or income, see other specs)
-          #  therefore, the gross and net are the same
+          # without previous withholding to recoup, losses net the same as they gross
           expect(transaction.net_amount).to eq(transaction.gross_amount)
-
-          # ^^^ this is all wrong
-          # TODO: fix this nonsense
-          # losses are negatively taxable. we should be paying back previously withheld taxes that are no longer due.
+          # applies a negative amount to first tax bracket
+          expect(capital_gains.current_bracket.applied).to eq(-101)
+          # making the overall total negative as well
+          expect(capital_gains.applied).to eq(-101)
         end
 
         it "credits the transaction amount to the tax bracket" do
           taxes, *extra = transaction.tax_transactions
           expect(extra).to be_empty
           expect(taxes.amount).to eq(-101)
+          expect(capital_gains.applied).to eq(-101)
+        end
+
+        context "with previous growth transaction" do
+          let(:attributes) { { balance: 100_000 } } # easier math
+          # apply $9k to the first $10k tax bracket
+          let!(:previous) { instance.grow(date, 1.09, capital_gains: capital_gains) }
+
+          it "reverses a portion of the witholding previously applied" do
+            expect(transaction.gross_amount).to eq(-5_405)
+            # net is -10% lower than gross to repay previous withholding
+            expect(transaction.net_amount).to eq(-4_864.5)
+          end
+
+          it "reduces the amount applied to taxes" do
+            expect { subject }.to change { capital_gains.applied }.by(-5_405)
+          end
         end
       end
 
-      context "with a transaction that pushes into the next tax bracket" do
-        let(:attributes) { { balance: 100_000 } } # easier math
-
-        it "has transactions from both brackets" do
-          prev = instance.grow(date, 1.09, capital_gains: capital_gains)
-          # binding.pry
-          # TODO
-        end
-      end
     end
 
     describe "#debit" do

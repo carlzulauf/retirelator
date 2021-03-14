@@ -9,9 +9,11 @@ module Retirelator
       desc = gross.positive? ? "Growth" : "Loss"
       taxes = apply_tax(gross, capital_gains, taxable_gains, 1 - income_ratio, **tax_info(desc))
       taxes.concat apply_tax(gross, income, taxable_gains, income_ratio, **tax_info(desc))
-      net = gross.positive? ? gross - taxes.sum(&:total) : gross
+      net = gross - taxes.sum(&:total)
       @balance += net
-      build_transaction("Growth", date, gross, net, taxes)
+      transaction_desc = "#{desc} #{((ratio - 1) * 100).round(4)}%"
+      transaction_desc << " (#{(income_ratio * 100).round(2)}% short term)" if taxes.any?
+      build_transaction(transaction_desc, date, gross, net, taxes)
     end
 
     def debit(date, amount, income: nil, penalty: 0.to_d, description: "Debit", withhold_from: nil)

@@ -16,11 +16,17 @@ Retirelator.logger.level = Logger::FATAL
 sim_params = YAML.load_file(ARGV[0])
 
 # Retirelator.save_json(simulation, File.join(SIM_SAVE_PATH, "init-#{ULID.generate}")
-10.times do
+positive = 0
+count = 100
+count.times do
   simulation = Retirelator.from_params(sim_params)
   id = ULID.generate
   print "#{id} (seed: #{simulation.noiser.seed.to_s.rjust(39)})"
   simulation.simulate!
-  puts ". Accounts: #{simulation.to_currency(simulation.accounts.map(&:balance).sum).rjust(20)}"
+  balance = simulation.accounts.map(&:balance).sum
+  puts ". Accounts: #{simulation.to_currency(balance).rjust(20)}"
+  positive += 1 if balance.positive?
   Retirelator.save_json(simulation, File.join(SIM_SAVE_PATH, "#{id}.json"))
 end
+
+puts "Positive #{((positive.to_f / count) * 100).round(2)}%"

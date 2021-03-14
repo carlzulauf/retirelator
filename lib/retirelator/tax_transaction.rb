@@ -12,6 +12,8 @@ module Retirelator
     option :account, Types::Strict::String.optional, default: -> { nil }
 
     def taxes_paid
+      # there is no withholding in negative tax land
+      return 0.to_d if applied.negative?
       (amount * percent).round(2)
     end
     alias_method :total, :taxes_paid

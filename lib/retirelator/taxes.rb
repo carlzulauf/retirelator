@@ -28,12 +28,15 @@ module Retirelator
       return [] if amount.zero?
       [].tap do |tax_transactions|
         loop do
-          bracket     = brackets[current_bracket_index]
-          remainder   = bracket.apply(amount)
+          remainder   = current_bracket.apply(amount)
           applied     = amount - remainder
-          tax_transactions << build_tax_transaction(applied, bracket, **extra)
+          tax_transactions << build_tax_transaction(applied, current_bracket, **extra)
           break if remainder.zero?
           amount = remainder
+          # first bracket can go negative
+          next if amount.negative? && current_bracket.first?
+          # when bracket goes from negative to zero we might have a remainder and room in bracket
+          next if amount.positive? && current_bracket.remaining?
           @current_bracket_index = current_bracket_index + (amount.positive? ? 1 : -1)
         end
       end
@@ -43,18 +46,21 @@ module Retirelator
       return [] if amount.zero?
       [].tap do |tax_transactions|
         loop do
-          bracket = brackets[current_bracket_index]
-          gross, remainder = bracket.net_debit(amount)
-          tax_transactions << build_tax_transaction(gross, bracket, **extra)
+          gross, remainder = current_bracket.net_debit(amount)
+          tax_transactions << build_tax_transaction(gross, current_bracket, **extra)
           break if remainder.zero?
           amount = remainder
-          @current_bracket_index += 1
+          @current_bracket_index += 1 unless current_bracket.remaining?
         end
       end
     end
 
     def applied
       brackets.sum(&:applied)
+    end
+
+    def current_bracket
+      brackets[current_bracket_index]
     end
 
     private
