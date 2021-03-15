@@ -148,8 +148,8 @@ module Retirelator
 
     def inflate_tax_year
       @current_tax_year = current_tax_year.next_year(
-        inflation_ratio: configuration.inflation_ratio(noiser.rand),
-        salary_ratio: configuration.annual_salary_growth_ratio(noiser.rand)
+        inflation_ratio: noiser.apply(configuration.inflation_ratio, 0.15),
+        salary_ratio: noiser.apply(configuration.annual_salary_growth_ratio, 0.5),
       )
       tax_years << @current_tax_year
     end
@@ -281,16 +281,12 @@ module Retirelator
         next unless account.balance.positive?
         add_transactions account.grow(
           current_date,
-          with_noise(configuration.monthly_investment_growth_ratio), # applying noise to final ratio introduces lots of noise
+          configuration.monthly_investment_growth_ratio(noiser.random_scaled_ratio),
           capital_gains: current_tax_year.capital_gains,
           income: current_tax_year.income,
-          income_ratio: with_noise(configuration.short_term_gains_ratio),
+          income_ratio: noiser.apply(configuration.short_term_gains_ratio)
         )
       end
-    end
-
-    def with_noise(original)
-      noiser.apply(original)
     end
 
     def tax_ytd_income

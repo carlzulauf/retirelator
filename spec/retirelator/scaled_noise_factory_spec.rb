@@ -20,6 +20,15 @@ describe Retirelator::ScaledNoiseFactory do
     let(:options) { { seed: 123, noise: noise } }
     subject { described_class.new(**options) }
 
+    describe "#invert_ratio" do
+      # a number increased by 10% (ratio: 1.1) and then decreased 10% is smaller than it began
+      # to make it so that +10% followed by -10% evens out we need to "invert"
+      # the negative growth so that it's equal in scale to "undoing" a +10% growth
+      it "converts a ratio of 0.75 (-25%) to 0.8 (-20%)" do
+        expect(subject.invert_ratio(0.75)).to eq(0.8)
+      end
+    end
+
     describe "#rand" do
       it "returns a random ratio within noise factor of 1" do
         100.times { expect(subject.rand).to be_within(0.15).of(1) }

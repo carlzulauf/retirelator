@@ -19,10 +19,10 @@ module Retirelator
     # ratio (0..1) of taxable investment returns expected to be short term gains (taxable as income)
     decimal :short_term_gains_ratio,    default: -> { 0.1 }
 
-    # amount of random noise to introduce into growth/inflation
+    # percent of random noise to introduce into growth/inflation
     # 0 is no noise
-    # 1 is a reasonable amount of noise
-    # amount greater than 1 is an extreme amount of noise
+    # 0.15 applies random +/- up to 15% changes in various spots
+    # 1.0 would be up to 100% changes and is probably not a good idea
     decimal :noise,                     default: -> { 0 }
 
     # Number used to seed random number generator
@@ -37,8 +37,8 @@ module Retirelator
       ( (salary_growth_rate * noise_ratio) / 100 ) + 1
     end
 
-    def monthly_investment_growth_ratio
-      monthly_ratio(investment_growth_rate)
+    def monthly_investment_growth_ratio(noise = 1)
+      monthly_ratio(investment_growth_rate, noise)
     end
 
     # def daily_investment_growth_ratio
@@ -51,8 +51,8 @@ module Retirelator
 
     private
 
-    def annual_ratio(annual_rate)
-      (annual_rate / 100.to_d) + 1
+    def annual_ratio(annual_rate, noise = 1)
+      ((annual_rate / 100.to_d) + 1) * noise
     end
 
     # 10% represented as 1.10
@@ -62,8 +62,8 @@ module Retirelator
     #   Monthly rate of ~0.526% (returns decimal 1.00526)
     #   Compounding $1000 * 1.00526, 12 times, produces the expected $1065 total
     #   `12.times.reduce(1000) { |m| m * 1.00526 }` => ~1065
-    def monthly_ratio(annual_rate)
-      annual_ratio(annual_rate) ** (1.to_d / 12)
+    def monthly_ratio(annual_rate, noise = 1)
+      annual_ratio(annual_rate, noise) ** (1.to_d / 12)
     end
 
     # def daily_ratio(annual_rate)

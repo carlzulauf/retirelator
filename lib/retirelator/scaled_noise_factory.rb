@@ -9,13 +9,25 @@ module Retirelator
     option :seed,   Types::Strict::Integer, default: -> { Random.new.seed }
     option :count,  Types::Strict::Integer, default: -> { 0 }
 
-    def rand
+    def random_scaled_ratio(scale = 1)
       base = (next_rand * 2) - 1 # random number between -1, 1
-      1 + (base * noise)
+      ratio = 1 + (base * scale * noise)
+      # scale decreasing ratio so it's proportional to increase
+      # Example: 25% increase followed by 25% decrease is less than starting #
+      #   1000 * 1.25 (25% increase) = $1250
+      #   1250 * 0.75 (25% decrease) = $937.5 (too low. biases loss)
+      #   1250 * 0.80 (20% decrease) = $1000 (1 / inverse [1.25])
+      #   ... also works in reverse: 80% * 125% = 100%
+      ratio > 1 ? ratio : invert_ratio(ratio)
     end
 
-    def apply(value)
-      value * rand
+    def apply(value, scale = 1)
+      value * random_scaled_ratio(scale)
+    end
+
+    def invert_ratio(start)
+      inverse = 1 + (1 - start)
+      1 / inverse
     end
 
     private
