@@ -29,14 +29,14 @@ describe Retirelator::ScaledNoiseFactory do
       end
     end
 
-    describe "#rand" do
+    describe "#random_scaled_ratio" do
       it "returns a random ratio within noise factor of 1" do
-        100.times { expect(subject.rand).to be_within(0.15).of(1) }
+        100.times { expect(subject.random_scaled_ratio).to be_within(0.15).of(1) }
       end
 
       it "does not regularly return 1 exactly" do
         expect(
-          100.times.count { subject.rand == 1 }
+          100.times.count { subject.random_scaled_ratio == 1 }
         ).to be < 10 # less than 10%, at least
       end
 
@@ -44,12 +44,12 @@ describe Retirelator::ScaledNoiseFactory do
         let(:noise) { 1.5 }
 
         it "returns a random ratio within noise factor of 1" do
-          100.times { expect(subject.rand).to be_within(1.5).of(1) }
+          100.times { expect(subject.random_scaled_ratio).to be_within(1.5).of(1) }
         end
 
         it "does not regularly return 1 exactly" do
           expect(
-            100.times.count { subject.rand == 1 }
+            100.times.count { subject.random_scaled_ratio == 1 }
           ).to be < 10
         end
       end
