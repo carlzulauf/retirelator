@@ -1,10 +1,10 @@
 module Retirelator
   class TaxYear < DecimalStruct
-    option :year, Types::Strict::Integer
+    attribute :year, required: true
     decimal :salary
 
-    option :income, Types::Taxes, default: -> { default_income_tax }
-    option :capital_gains, Types::Taxes, default: -> { default_capital_gains }
+    attribute :income, Taxes, default: -> { default_income_tax }
+    attribute :capital_gains, Taxes, default: -> { default_capital_gains }
     decimal :ppp, default: -> { 1 }
 
     def next_year(inflation_ratio:, salary_ratio:)
@@ -72,6 +72,4 @@ module Retirelator
       )
     end
   end
-
-  Types.register_struct(TaxYear, collection: true)
 end

@@ -1,10 +1,10 @@
 describe Retirelator::DecimalStruct do
   class TestParent < Retirelator::DecimalStruct
-    option :foo
+    attribute :foo
   end
 
   class TestChild < TestParent
-    option :bar
+    attribute :bar
   end
 
   describe ".attribute_names" do

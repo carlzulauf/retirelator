@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+require_relative "env.rb"
+
+class ExampleStruct < Retirelator::DecimalStruct
+
+end

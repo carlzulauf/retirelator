@@ -1,7 +1,7 @@
 module Retirelator
   class SimulationConfiguration < DecimalStruct
-    option :description,  Types::Strict::String,  default: -> { random_desc }
-    option :start_date,   Types::JSON::Date,      default: -> { Date.today }
+    attribute :description,             default: -> { random_desc }
+    attribute :start_date, Date,        default: -> { Date.today }
 
     # annual rate of inflation, which increases ppp ratio every year
     decimal :inflation_rate,            default: -> { 1.9 }
@@ -27,7 +27,7 @@ module Retirelator
 
     # Number used to seed random number generator
     # Noise should be deterministic, meaning identical seeds should produce identical results
-    option :seed, Types::Strict::Integer, default: -> { Random.new.seed }
+    attribute :seed,                    default: -> { Random.new.seed }
 
     def inflation_ratio(noise_ratio = 1)
       ( (inflation_rate * noise_ratio) / 100 ) + 1
@@ -74,6 +74,4 @@ module Retirelator
       "Simulation #{SecureRandom.hex(4)}"
     end
   end
-
-  Types.register_struct(SimulationConfiguration)
 end

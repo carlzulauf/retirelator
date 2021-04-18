@@ -1,16 +1,16 @@
 module Retirelator
   class FixedIncome < DecimalStruct
-    option :name, Types::Strict::String, default: -> { "Fixed Income Account" }
-    option :start_date, Types::JSON::Date, default: -> { Date.today }
-    option :stop_date, Types::JSON::Date.optional, default: -> { nil }
+    attribute :name, default: "Fixed Income Account"
+    attribute :start_date,  Date, default: -> { Date.today }
+    attribute :stop_date,   Date, default: nil
 
     # Are withdrawals taxed as income?
-    option :taxable, Types::Strict::Bool, default: -> { true }
+    attribute :taxable, default: true
 
     # Indexed for inflation?
-    option :indexed, Types::Strict::Bool, default: -> { true }
+    attribute :indexed, default: true
 
-    decimal :monthly_income, default: -> { 0 }
+    decimal :monthly_income, default: 0
     decimal :starting_monthly_income, default: -> { monthly_income }
 
     def pay(date, income_tax)
@@ -38,7 +38,7 @@ module Retirelator
 
     def inflate(date, ratio)
       return self if date < start_date
-      @monthly_income = (monthly_income * ratio).round(2)
+      self.monthly_income = (monthly_income * ratio).round(2)
       self
     end
 
@@ -54,6 +54,4 @@ module Retirelator
       false
     end
   end
-
-  Types.register_struct(FixedIncome, collection: true)
 end

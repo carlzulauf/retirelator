@@ -1,9 +1,9 @@
 module Retirelator
   # potentially a base class for CapitalGainsTaxes/IncomeTaxes
   class Taxes < DecimalStruct
-    option :type
-    option :year, Types::Strict::Integer
-    option :brackets, Types::TaxBrackets, default: -> { Array.new }
+    attribute :type
+    attribute :year
+    attribute :brackets, TaxBrackets
 
     def self.from_thresholds(type, thresholds)
       last = thresholds.count - 1
@@ -81,6 +81,4 @@ module Retirelator
       )
     end
   end
-
-  Types.register_struct(Taxes)
 end

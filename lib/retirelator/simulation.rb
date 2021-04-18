@@ -5,17 +5,18 @@ module Retirelator
         data
       end
     end
-    option :start_date, Types::JSON::Date, default: -> { Date.today }
-    option :retiree, Types::Retiree, default: -> { Retiree.new }
-    option :configuration, Types::SimulationConfiguration, default: -> { SimulationConfiguration.new }
-    option :tax_years, Types::TaxYears, default: -> { [] }
-    option :ira_account, Types::IraAccount, default: -> { starting_ira }
-    option :savings_account, Types::SavingsAccount, default: -> { starting_savings }
-    option :roth_account, Types::RothAccount, default: -> { starting_roth }
-    option :fixed_incomes, Types::FixedIncomes, default: -> { Array.new }
-    option :transactions, Types::Transactions, default: -> { Array.new }
-    option :tax_transactions, Types::TaxTransactions, default: -> { Array.new }
-    option :noiser, Types::ScaledNoiseFactory, default: -> { ScaledNoiseFactory.new }
+
+    attribute :start_date,        Date,                     default: -> { Date.today }
+    attribute :retiree,           Retiree
+    attribute :configuration,     SimulationConfiguration
+    attribute :tax_years,         TaxYears
+    attribute :ira_account,       IraAccount,               default: -> { starting_ira }
+    attribute :savings_account,   SavingsAccount,           default: -> { starting_savings }
+    attribute :roth_account,      RothAccount,              default: -> { starting_roth }
+    attribute :fixed_incomes,     FixedIncomes
+    attribute :transactions,      Transactions
+    attribute :tax_transactions,  TaxTransactions
+    attribute :noiser,            ScaledNoiseFactory
 
     runtime_option :logger, default: -> { Retirelator.logger }
 

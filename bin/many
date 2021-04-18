@@ -1,17 +1,15 @@
 #!/usr/bin/env ruby
-require "pry"
 require_relative "env.rb"
-require "yaml"
 
 if ARGV[0].blank?
   puts "Missing required path to simulation configuration"
   exit
 end
 
-SIM_SAVE_NAME = File.basename(ARGV[0], '.yml')
-SIM_SAVE_PATH = File.join(ROOT_DIR, "simulations", File.basename(ARGV[0], '.yml'), "runs")
+SIM_SAVE_NAME = File.basename(ARGV[0], '.yml').freeze
+# SIM_SAVE_PATH = File.join(ROOT_DIR, "simulations", File.basename(ARGV[0], '.yml'), "runs")
+# FileUtils.mkdir_p(SIM_SAVE_PATH)
 
-FileUtils.mkdir_p(SIM_SAVE_PATH)
 Retirelator.logger.level = Logger::FATAL
 sim_params = YAML.load_file(ARGV[0])
 
@@ -26,7 +24,7 @@ count.times do
   balance = simulation.accounts.map(&:balance).sum
   puts ". Accounts: #{simulation.to_currency(balance).rjust(20)}"
   positive += 1 if balance.positive?
-  Retirelator.save_json(simulation, File.join(SIM_SAVE_PATH, "#{id}.json"))
+  # Retirelator.save_json(simulation, File.join(SIM_SAVE_PATH, "#{id}.json"))
 end
 
 puts "Positive #{((positive.to_f / count) * 100).round(2)}%"

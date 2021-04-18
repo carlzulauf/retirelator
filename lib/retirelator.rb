@@ -8,13 +8,24 @@ require "securerandom"
 
 # dependecies
 require "ulid"
-require "dry-types"
-require "dry-initializer"
+# require "dry-types"
+# require "dry-initializer"
+require "opt_struct"
 require "retirelator/active_support_features"
 
 # utilities
-require "retirelator/types"
+# require "retirelator/types"
+require "retirelator/date"
+require "retirelator/decimal"
 require "retirelator/decimal_struct"
+
+# colletion types
+require "retirelator/collection"
+require "retirelator/fixed_incomes"
+require "retirelator/tax_brackets"
+require "retirelator/tax_transactions"
+require "retirelator/tax_years"
+require "retirelator/transactions"
 
 # domain models, ordered from independent to dependent types
 require "retirelator/fixed_income"
@@ -40,6 +51,10 @@ module Retirelator
   # def self.open(path)
   #   open_json File.read(path)
   # end
+
+  def define_collection(collection_name, type)
+    # TODO
+  end
 
   def self.open(path)
     if File.directory?(path)
@@ -140,7 +155,7 @@ module Retirelator
   end
 
   def self.to_params(simulation)
-    jsonish = simulation.as_json
+    jsonish = simulation.as_json.deep_symbolize_keys
     retiree_params(jsonish[:retiree])
       .merge(configuration_params(jsonish[:configuration]))
       .merge(noiser_to_params(jsonish[:noiser]))
@@ -152,7 +167,7 @@ module Retirelator
   end
 
   def self.default_params
-    to_params(Simulation.new)
+    to_params(Simulation.new).freeze
   end
 
   def self.retiree_params(params)

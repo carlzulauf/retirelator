@@ -1,8 +1,8 @@
 module Retirelator
   class TaxBracket < DecimalStruct
-    decimal :from, default: -> { 0 }
-    option :to, Types::JSON::Decimal.optional, default: -> { BigDecimal::INFINITY }
-    decimal :rate, default: -> { 0 }
+    decimal :from,    default: -> { 0 }
+    decimal :to,      default: -> { BigDecimal::INFINITY }
+    decimal :rate,    default: -> { 0 }
     decimal :applied, default: -> { 0 }
 
     def numeric_to
@@ -56,14 +56,14 @@ module Retirelator
 
     def credit(amount)
       credit_amount = [creditable_remaining, amount].min
-      @applied -= credit_amount
+      self.applied -= credit_amount
       amount - credit_amount
     end
 
     def debit(amount)
       # if bracket is negative, don't add more than needed to bring to zero
       debit_amount = [applied.negative? ? applied.abs : remaining, amount].min
-      @applied += debit_amount
+      self.applied += debit_amount
       amount - debit_amount
     end
 
@@ -75,5 +75,14 @@ module Retirelator
     end
   end
 
-  Types.register_struct(TaxBracket, collection: true)
+  # represents a collection/array of tax brackets
+  class TaxBrackets
+    def self.from_hash(maybe_array)
+      Array.wrap(maybe_array).map { |value| TaxBracket.from_hash(value) }
+    end
+
+    def self.to_hash(maybe_array)
+      Array.wrap(maybe_array).map { |value| TaxBracket.to_hash(value) }
+    end
+  end
 end

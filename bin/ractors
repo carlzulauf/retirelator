@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+require_relative "env.rb"
+require "pry"
+
+if ARGV[0].blank?
+  puts "Missing required path to simulation configuration"
+  exit
+end
+
+Retirelator.logger.level = Logger::FATAL
+sim_params = YAML.load_file(ARGV[0])
+
+puts "Setting up params for each sim"
+params_list = [sim_params.merge("noise" => 0).freeze]
+99.times do
+  params_list << sim_params.merge("rand_seed" => Random.new.seed)
+end
+
+ractors = params_list.in_groups(10, false).map do |work|
+  Ractor.new(work.freeze) do |work_list|
+    work_list.each do |params|
+      simulation = Retirelator.from_params(params)
+      simulation.simulate!
+      balance = simulation.accounts.map(&:balance).sum
+      Ractor.yield "Seed: #{simulation.noiser.seed.to_s.rjust(39)}. Balance: #{simulation.to_currency(balance).rjust(20)}."
+    end
+  end
+end
+
+loop do
+  taken = 0
+  ractors.each do |a|
+    result = a.take
+    if result.present?
+      puts result
+      taken += 1
+    end
+  end
+  break if taken == 0
+end

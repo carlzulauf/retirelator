@@ -1,15 +1,15 @@
 module Retirelator
   class TaxTransaction < DecimalStruct
-    option :id, Types::Strict::String, default: -> { ULID.generate }
-    option :type, Types::Coercible::Symbol
-    option :year, Types::Strict::Integer
+    attribute :id, default: -> { ULID.generate }
+    attribute :type, Symbol, required: true
+    attribute :year, required: true
     decimal :amount
     alias_method :gross_amount, :amount
     decimal :rate
     decimal :applied
     decimal :remaining
-    option :description, Types::Strict::String.optional, default: -> { nil }
-    option :account, Types::Strict::String.optional, default: -> { nil }
+    attribute :description
+    attribute :account
 
     def taxes_paid
       # there is no withholding in negative tax land
@@ -42,5 +42,14 @@ module Retirelator
     end
   end
 
-  Types.register_struct(TaxTransaction, collection: true)
+  # represents a collection/array of tax transactions
+  class TaxTransactions
+    def self.from_hash(maybe_array)
+      Array.wrap(maybe_array).map { |value| TaxTransaction.from_hash(value) }
+    end
+
+    def self.to_hash(maybe_array)
+      Array.wrap(maybe_array).map { |value| TaxTransaction.to_hash(value) }
+    end
+  end
 end

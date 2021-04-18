@@ -2,8 +2,8 @@ describe Retirelator::FixedIncome do
   let(:attributes) do
     {
       name: "Defined Benefit Plan",
-      start_date: "2030-01-01",
-      stop_date: "2040-01-01",
+      start_date: Date.new(2030, 1, 1),
+      stop_date: Date.new(2040, 1, 1),
       monthly_income: 1_500,
       indexed: true,
       taxable: false,
@@ -70,7 +70,7 @@ describe Retirelator::FixedIncome do
     let(:attributes) do
       {
         name: "Pension",
-        start_date: "2030-01-01",
+        start_date: Date.new(2030, 1, 1),
         stop_date: nil,
         monthly_income: 1_337,
         indexed: false,

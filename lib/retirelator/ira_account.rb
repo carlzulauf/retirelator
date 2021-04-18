@@ -24,6 +24,4 @@ module Retirelator
       true
     end
   end
-
-  Types.register_struct(IraAccount)
 end

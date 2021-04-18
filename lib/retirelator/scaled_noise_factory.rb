@@ -6,8 +6,8 @@ module Retirelator
     # greater than 1 will break things
     decimal :noise, default: -> { 0 }
 
-    option :seed,   Types::Strict::Integer, default: -> { Random.new.seed }
-    option :count,  Types::Strict::Integer, default: -> { 0 }
+    attribute :seed,  default: -> { Random.new.seed }
+    attribute :count, default: 0
 
     def random_scaled_ratio(scale = 1)
       base = (next_rand * 2) - 1 # random number between -1, 1
@@ -43,6 +43,4 @@ module Retirelator
       end
     end
   end
-
-  Types.register_struct(ScaledNoiseFactory)
 end

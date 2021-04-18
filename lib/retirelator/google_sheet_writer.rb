@@ -4,7 +4,8 @@ require "googleauth/stores/file_token_store"
 module Retirelator
   class GoogleSheetWriter
     SERVICE = Google::Apis::SheetsV4
-    extend Dry::Initializer
+    # extend Dry::Initializer
+    include OptStruct.build
 
     option :credentials_path,   default: -> { config_credentials_path }
     option :token_path,         default: -> { config_token_path }

@@ -1,24 +1,58 @@
 module Retirelator
-  class DecimalStruct
-    cattr_accessor :runtime_attributes, instance_reader: true, default: []
-    extend Dry::Initializer
+  class DecimalStruct < OptStruct.new
+    # include OptStruct.build
+    # cattr_accessor :runtime_attributes, instance_reader: true, default: []
+    # extend Dry::Initializer
+    shareable!
 
-    def self.attribute_names
-      dry_initializer.options.map(&:target)
+    class << self
+      alias_method :runtime_option, :option
+
+      def attributes
+        {}.freeze
+      end
+
+      def attribute(name, type = nil, **options)
+        add_attribute name, type
+        options = { default: -> { type.new } }.merge(options) if type
+        option name, **options
+      end
+
+      def attribute_names
+        attributes.keys
+      end
+
+      def from_hash(input)
+        init_with = {}
+        attributes.each do |name, type|
+          value = input[name] || input[name.to_s]
+          init_with[name] = type.nil? ? value : type.from_hash(value)
+        end
+        self.new(**init_with)
+      end
+
+      def to_hash(instance)
+        instance.to_hash
+      end
+
+      def decimal(name, **options)
+        attribute(name, Decimal, **options)
+      end
+
+      private
+
+      def add_attribute(name, type = nil)
+        combined = attributes.merge(name => type)
+        class_eval <<~RUBY
+          def self.attributes
+            #{combined.inspect}.freeze
+          end
+        RUBY
+      end
     end
 
-    def self.decimal(attribute_name, **extra)
-      option(attribute_name, Types::JSON::Decimal, **extra)
-    end
-
-    # A runtime option is not serialized or visible through #attributes
-    def self.runtime_option(attribute_name, *args, **extra)
-      runtime_attributes.push(attribute_name)
-      option(attribute_name, *args, **extra)
-    end
-
-    def round(decimal)
-      decimal.round(2)
+    def round(decimal, precision = 2)
+      decimal.round(precision)
     end
 
     def to_currency(decimal)
@@ -29,14 +63,15 @@ module Retirelator
       round(decimal).to_s
     end
 
-    def attributes
-      self.class.dry_initializer.attributes(self).without(runtime_attributes)
-    end
-
-    def as_json(*a)
-      attributes.each_with_object({}) do |(key, value), jsonish|
-        jsonish[key] = value.as_json
+    def to_hash(*)
+      {}.tap do |serializable|
+        self.class.attributes.each do |name, type|
+          value = send(name)
+          serializable[name.to_s] = type ? type.to_hash(value) : value
+        end
       end
     end
+
+    alias_method :as_json, :to_hash
   end
 end
