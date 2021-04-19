@@ -10,7 +10,7 @@ module Retirelator
     decimal :net_amount # gross minus taxes
     decimal :balance
 
-    option :tax_transactions, TaxTransactions, default: -> { Array.new }
+    attribute :tax_transactions, TaxTransactions
 
     def credit?
       gross_amount.positive?

@@ -22,12 +22,12 @@ describe Retirelator::Transaction do
     end
 
     it "fails to initialize without the required attributes" do
-      expect{ subject.new({}) }.to raise_error(KeyError)
+      expect{ subject.new }.to raise_error(ArgumentError)
     end
 
     it "defaults to no tax transactions" do
       transaction = subject.new(**required_attributes)
-      expect(transaction.tax_transactions).to be_a(Array)
+      expect(transaction.tax_transactions).to be_a(Retirelator::TaxTransactions)
       expect(transaction.tax_transactions).to be_empty
     end
 

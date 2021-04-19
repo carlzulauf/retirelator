@@ -67,7 +67,7 @@ GEM
     msgpack (1.4.2)
     multi_json (1.15.0)
     multipart-post (2.1.1)
-    opt_struct (1.2.0)
+    opt_struct (1.2.1)
     os (1.1.1)
     pry (0.14.0)
       coderay (~> 1.1)
@@ -126,4 +126,4 @@ RUBY VERSION
    ruby 3.0.0p0
 
 BUNDLED WITH
-   2.2.3
+   2.2.15
