@@ -4,7 +4,7 @@ module Retirelator
     # this scale is used for every step where noise is introduced
     # small numbers work best
     # greater than 1 will break things
-    decimal :noise, default: -> { 0 }
+    decimal :noise, default: 0
 
     attribute :seed,  default: -> { Random.new.seed }
     attribute :count, default: 0
@@ -33,7 +33,7 @@ module Retirelator
     private
 
     def next_rand
-      generator.rand.tap { @count += 1 }
+      generator.rand.tap { self.count += 1 }
     end
 
     def generator

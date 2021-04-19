@@ -36,7 +36,14 @@ module Retirelator
       end
 
       def decimal(name, **options)
+        options = { default: 0 }.merge(options)
         attribute(name, Decimal, **options)
+        # overwrite the reader to cast to decimal on fetch
+        class_eval <<~RUBY
+          def #{name}
+            options.fetch(:#{name}, 0)&.to_d
+          end
+        RUBY
       end
 
       private

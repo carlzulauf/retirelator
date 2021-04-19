@@ -10,7 +10,7 @@ module Retirelator
       taxes = apply_tax(gross, capital_gains, taxable_gains, 1 - income_ratio, **tax_info(desc))
       taxes.concat apply_tax(gross, income, taxable_gains, income_ratio, **tax_info(desc))
       net = gross - taxes.sum(&:total)
-      @balance += net
+      self.balance += net
       transaction_desc = "#{desc} #{((ratio - 1) * 100).round(4)}%"
       transaction_desc << " (#{(income_ratio * 100).round(2)}% short term)" if taxes.any?
       build_transaction(transaction_desc, date, gross, net, taxes)
@@ -20,7 +20,7 @@ module Retirelator
       withholding = (amount * (penalty / 100)).round(2)
       taxes = apply_tax(amount, income, taxable_distributions, **tax_info(description))
       withholding += taxes.sum(&:total)
-      @balance -= amount
+      self.balance -= amount
       if withhold_from
         external_withholding = [withholding, withhold_from.balance].min
         build_transaction(
@@ -46,7 +46,7 @@ module Retirelator
         gross = taxes.sum(&:gross_amount)
         net   = taxes.sum(&:net_amount)
         net  -= (gross * (penalty / 100)).round(2)
-        @balance -= gross
+        self.balance -= gross
         build_transaction(description, date, -gross, -net, taxes)
       else
         debit(date, amount, income: income, penalty: penalty)
@@ -55,7 +55,7 @@ module Retirelator
 
     def credit(date, amount, income: nil, description: "Credit")
       taxes = apply_tax(amount * -1, income, deductible_contributions, **tax_info(description))
-      @balance += amount
+      self.balance += amount
       build_transaction(description, date, amount, amount, taxes)
     end
 
