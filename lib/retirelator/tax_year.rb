@@ -44,7 +44,7 @@ module Retirelator
 
     def default_income_tax
       # https://taxfoundation.org/2021-tax-brackets/#brackets
-      Taxes.new(
+      Taxes.from_hash(
         type: :income,
         year: year,
         brackets: [
@@ -61,7 +61,7 @@ module Retirelator
 
     def default_capital_gains
       # https://taxfoundation.org/2021-tax-brackets/#capgains
-      Taxes.new(
+      Taxes.from_hash(
         type: :capital_gains,
         year: year,
         brackets: [

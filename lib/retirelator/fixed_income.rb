@@ -1,7 +1,7 @@
 module Retirelator
   class FixedIncome < DecimalStruct
     attribute :name, default: "Fixed Income Account"
-    attribute :start_date,  Date, default: -> { Date.today }
+    attribute :start_date,  Date, default: nil
     attribute :stop_date,   Date, default: nil
 
     # Are withdrawals taxed as income?
@@ -13,7 +13,8 @@ module Retirelator
     decimal :monthly_income, default: 0
     decimal :starting_monthly_income, default: -> { monthly_income }
 
-    def pay(date, income_tax)
+    def pay(retiree, date, income_tax)
+      return [] if start_date.blank? && date < retiree.retirement_date
       return [] if date < start_date
       return [] if stop_date && date > stop_date
       tax_transactions, net_income = pay_tax(monthly_income, income_tax)
@@ -31,7 +32,7 @@ module Retirelator
     end
 
     def pay_tax(amount, income_tax)
-      return [[], amount] unless taxable
+      return [TaxTransactions.new, amount] unless taxable
       transactions = income_tax.apply(amount, account: name, description: "Fixed Income Payment")
       [transactions, amount - transactions.sum(&:total)]
     end

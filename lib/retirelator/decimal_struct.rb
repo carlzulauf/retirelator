@@ -25,6 +25,7 @@ module Retirelator
       def from_hash(input)
         init_with = {}
         attributes.each do |name, type|
+          next unless input.key?(name) || input.key?(name.to_s)
           value = input[name] || input[name.to_s]
           init_with[name] = type.nil? ? value : type.from_hash(value)
         end

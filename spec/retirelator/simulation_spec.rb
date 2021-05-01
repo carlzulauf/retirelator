@@ -54,9 +54,9 @@ describe Retirelator::Simulation do
       end
 
       it "can be initialized from transaction hashes" do
-        hashes = transactions.map(&:as_json)
+        hashes = transactions.map(&:to_hash)
         expect(hashes[0]).to be_a(Hash)
-        obj = subject.new(**simulation_attributes.merge(transactions: hashes))
+        obj = subject.from_hash(simulation.to_hash.merge("transactions" => hashes))
         expect(obj.transactions.count).to eq(2)
         expect(obj.transactions[0]).to be_a(Retirelator::Transaction)
         expect(obj.transactions[0].date).to eq(Date.today)
@@ -73,12 +73,12 @@ describe Retirelator::Simulation do
         doc = subject.as_json
         expect(doc).to be_a(Hash)
         expect(doc.keys).to be_many
-        expect(doc[:retiree]).to be_a(Hash)
+        expect(doc["retiree"]).to be_a(Hash)
       end
 
-      it "returns a document that can loaded using .new" do
+      it "returns a document that can loaded using .from_hash" do
         doc = subject.as_json
-        obj = described_class.new(**doc)
+        obj = described_class.from_hash(doc)
         expect(obj.retiree.name).to eq("Pat")
         expect(obj.roth_account.balance).to eq(25_000)
         expect(obj.savings_account.balance).to eq(75_000)
@@ -87,10 +87,10 @@ describe Retirelator::Simulation do
     end
 
     describe "#to_json" do
-      it "returns a json document that can be parsed and loaded with .new" do
+      it "returns a json document that can be parsed and loaded with .from_hash" do
         json = subject.to_json
-        doc = JSON.parse(json, symbolize_names: true)
-        obj = described_class.new(**doc)
+        doc = JSON.parse(json)
+        obj = described_class.from_hash(doc)
         expect(obj.retiree.name).to eq("Pat")
         expect(obj.roth_account.balance).to eq(25_000)
         expect(obj.savings_account.balance).to eq(75_000)
@@ -106,14 +106,14 @@ describe Retirelator::Simulation do
           doc = subject.as_json
           expect(doc).to be_a(Hash)
           expect(doc.keys).to be_many
-          expect(doc[:retiree]).to be_a(Hash)
-          expect(doc[:transactions]).to be_many
-          expect(doc[:transactions].first).to be_a(Hash)
+          expect(doc["retiree"]).to be_a(Hash)
+          expect(doc["transactions"]).to be_many
+          expect(doc["transactions"].first).to be_a(Hash)
         end
 
-        it "returns a doc that can be loaded using .new" do
+        it "returns a doc that can be loaded using .from_hash" do
           doc = subject.as_json
-          obj = described_class.new(**doc)
+          obj = described_class.from_hash(doc)
           expect(obj.retiree.name).to eq("Pat")
           expect(obj.transactions).to be_many
           expect(obj.transactions.first).to be_a(Retirelator::Transaction)

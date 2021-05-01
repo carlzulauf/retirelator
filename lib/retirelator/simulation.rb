@@ -220,7 +220,7 @@ module Retirelator
     def payout_fixed_incomes
       amount = 0
       fixed_incomes.each do |account|
-        transactions = account.pay(current_date, current_tax_year.income)
+        transactions = account.pay(retiree, current_date, current_tax_year.income)
         add_transactions transactions
         transactions.each { |t| amount += t.net_amount }
       end
@@ -322,7 +322,7 @@ module Retirelator
       gains = account.balance - (account.balance / cumulative_growth_ratio).round(2)
       short_term_gains = (gains * configuration.short_term_gains_ratio).round(2)
       long_term_gains = gains - short_term_gains
-      [].tap do |taxes|
+      TaxTransactions.new.tap do |taxes|
         if short_term_gains.positive?
           taxes.concat current_tax_year.income.apply(short_term_gains, description: "Estimated Taxable Gains YTD")
         end

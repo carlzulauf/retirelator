@@ -15,8 +15,8 @@ module Retirelator
       end
     end
 
-    def initialize(enum = nil)
-      @enum = enum || Array.new
+    def initialize(enum = Array.new)
+      @enum = enum
     end
 
     def __getobj__

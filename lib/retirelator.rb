@@ -16,6 +16,7 @@ require "retirelator/active_support_features"
 # utilities
 # require "retirelator/types"
 require "retirelator/date"
+require "retirelator/symbol"
 require "retirelator/decimal"
 require "retirelator/decimal_struct"
 
@@ -106,7 +107,7 @@ module Retirelator
 
   def self.load_json(json)
     params = JSON.parse(json, symbolize_names: true)
-    Simulation.new **params
+    Simulation.from_hash params
   end
 
   def self.save_json(simulation, path, pretty: false)
@@ -124,38 +125,28 @@ module Retirelator
 
   def self.load_msgpack(msg)
     params = MessagePack.unpack(msg).deep_symbolize_keys
-    Simulation.new **params
+    Simulation.from_hash params
   end
 
   def self.from_params(params)
     params          = default_params.merge(params.deep_symbolize_keys)
-    retiree         = Retiree.new(**retiree_params(params))
-    savings_account = SavingsAccount.new(balance: params[:savings_balance])
-    ira_account     = IraAccount.new(balance: params[:ira_balance])
-    roth_account    = RothAccount.new(balance: params[:roth_balance])
-    fixed_incomes   = fixed_incomes_from_params(params[:fixed_incomes], retiree)
-    noiser          = ScaledNoiseFactory.new(**noiser_from_params(params))
-    Simulation.new(
-      retiree:          retiree,
+    Simulation.from_hash(
+      retiree:          retiree_params(params),
       configuration:    configuration_params(params),
-      savings_account:  savings_account,
-      ira_account:      ira_account,
-      roth_account:     roth_account,
-      fixed_incomes:    fixed_incomes,
-      noiser:           noiser,
+      savings_account:  { balance: params[:savings_balance] },
+      ira_account:      { balance: params[:ira_balance] },
+      roth_account:     { balance: params[:roth_balance] },
+      fixed_incomes:    fixed_incomes_params(params[:fixed_incomes]),
+      noiser:           noiser_params(params),
     )
   end
 
-  def self.fixed_incomes_from_params(accounts_params, retiree)
-    return [] if accounts_params.blank?
-    accounts_params.map do |account|
-      account[:start_date] ||= retiree.retirement_date
-      FixedIncome.new(**account)
-    end
+  def self.fixed_incomes_params(accounts_params)
+    accounts_params.presence || []
   end
 
   def self.to_params(simulation)
-    jsonish = simulation.as_json.deep_symbolize_keys
+    jsonish = simulation.to_hash.deep_symbolize_keys
     retiree_params(jsonish[:retiree])
       .merge(configuration_params(jsonish[:configuration]))
       .merge(noiser_to_params(jsonish[:noiser]))
@@ -185,7 +176,7 @@ module Retirelator
     { noise: noiser_hash[:noise], rand_seed: noiser_hash[:seed] }.compact
   end
 
-  def self.noiser_from_params(params)
+  def self.noiser_params(params)
     { noise: params[:noise], seed: params[:rand_seed] }.compact
   end
 

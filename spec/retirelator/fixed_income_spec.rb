@@ -16,6 +16,7 @@ describe Retirelator::FixedIncome do
       brackets: [ Retirelator::TaxBracket.new(rate: 13) ]
     )
   end
+  let(:retiree) { double "Retiree" }
 
   subject { described_class.new(**attributes) }
 
@@ -35,17 +36,17 @@ describe Retirelator::FixedIncome do
 
     describe "#pay" do
       it "returns no transactions before start date" do
-        expect(subject.pay(Date.new(2020), taxes)).to be_empty
+        expect(subject.pay(retiree, Date.new(2020), taxes)).to be_empty
       end
 
       it "returns a transaction after start date" do
-        transactions = subject.pay(Date.new(2031), taxes)
+        transactions = subject.pay(retiree, Date.new(2031), taxes)
         expect(transactions.count).to eq(1)
         expect(transactions.first).to be_a(Retirelator::Transaction)
       end
 
       it "returns no transactions after end date" do
-        expect(subject.pay(Date.new(2041), taxes)).to be_empty
+        expect(subject.pay(retiree, Date.new(2041), taxes)).to be_empty
       end
     end
 
@@ -80,11 +81,11 @@ describe Retirelator::FixedIncome do
 
     describe "#pay" do
       it "returns no transactions before the start date" do
-        expect(subject.pay(Date.new(2025), taxes)).to be_empty
+        expect(subject.pay(retiree, Date.new(2025), taxes)).to be_empty
       end
 
       it "returns transactions far into the future" do
-        transactions = subject.pay(Date.new(2099), taxes)
+        transactions = subject.pay(retiree, Date.new(2099), taxes)
         expect(transactions.count).to eq(1)
         expect(transactions.first).to be_a(Retirelator::Transaction)
       end

@@ -5,7 +5,7 @@ module Retirelator
     attribute :year
     attribute :brackets, TaxBrackets
 
-    def self.from_thresholds(type, thresholds)
+    def self.from_thresholds(type, year, thresholds)
       last = thresholds.count - 1
       brackets = thresholds.count.times.map do |i|
         options = { from: thresholds[i][0], rate: thresholds[i][1] }
@@ -13,7 +13,7 @@ module Retirelator
         options[:to] = thresholds[i + 1][0] unless i == last
         TaxBracket.new(options)
       end
-      new(type: type, brackets: brackets)
+      new(type: type, year: year, brackets: brackets)
     end
 
     def inflate(ratio, tax_year = year + 1)
@@ -26,7 +26,7 @@ module Retirelator
 
     def apply(amount, **extra)
       return [] if amount.zero?
-      [].tap do |tax_transactions|
+      TaxTransactions.new.tap do |tax_transactions|
         loop do
           remainder   = current_bracket.apply(amount)
           applied     = amount - remainder
