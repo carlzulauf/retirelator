@@ -10,8 +10,8 @@ end
 ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), ".."))
 LOG_DIR = File.join(ROOT_DIR, "log")
 FileUtils.mkdir(LOG_DIR) unless File.exist?(LOG_DIR)
-Retirelator.logger = Logger.new(File.join(ROOT_DIR, "log", "test.log"))
-Retirelator.logger.level = Logger::WARN
+SPEC_LOGGER = Logger.new(File.join(ROOT_DIR, "log", "test.log"))
+SPEC_LOGGER.level = Logger::WARN
 
 shared_context "with income tax brackets" do
   let(:tax_bracket1) { Retirelator::TaxBracket.new(from: 0, to: 1000, rate: 0) }
@@ -38,6 +38,7 @@ shared_context "with a valid simulation" do
       ira_account:      ira_account,
       roth_account:     roth_account,
       savings_account:  savings_account,
+      logger:           SPEC_LOGGER,
     }
   end
 

@@ -22,14 +22,15 @@ module Retirelator
         attributes.keys
       end
 
-      def from_hash(input)
+      def from_hash(input = nil, **runtime_options)
+        input, runtime_options = runtime_options, {} unless input
         init_with = {}
         attributes.each do |name, type|
           next unless input.key?(name) || input.key?(name.to_s)
           value = input[name] || input[name.to_s]
           init_with[name] = type.nil? ? value : type.from_hash(value)
         end
-        self.new(**init_with)
+        self.new(**init_with.merge(runtime_options))
       end
 
       def to_hash(instance)

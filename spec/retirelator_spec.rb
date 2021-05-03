@@ -27,8 +27,8 @@ describe Retirelator do
   end
 
   describe ".from_params" do
-    let(:sim1) { subject.from_params(params) }
-    let(:sim2) { subject.from_params(params) }
+    let(:sim1) { subject.from_params(params, logger: SPEC_LOGGER) }
+    let(:sim2) { subject.from_params(params, logger: SPEC_LOGGER) }
 
     context "with no noise" do
       let(:params) do
@@ -63,8 +63,8 @@ describe Retirelator do
 
     context "with noise and different seeds" do
       let(:params) { { "noise" => 0.15, "ira_balance" => 100_000_000 } }
-      let(:sim1) { subject.from_params(params.merge("rand_seed" => 123)) }
-      let(:sim2) { subject.from_params(params.merge("rand_seed" => 456)) }
+      let(:sim1) { subject.from_params(params.merge("rand_seed" => 123), logger: SPEC_LOGGER) }
+      let(:sim2) { subject.from_params(params.merge("rand_seed" => 456), logger: SPEC_LOGGER) }
 
       it "produces different results for the two simulations" do
         sim1.simulate!

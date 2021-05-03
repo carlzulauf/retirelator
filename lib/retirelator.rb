@@ -47,8 +47,6 @@ require "retirelator/tax_year"
 require "retirelator/simulation"
 
 module Retirelator
-  mattr_accessor :logger, default: Logger.new(STDOUT)
-
   def self.open(path)
     if File.directory?(path)
       open_json(File.join(path, "simulation.json"))
@@ -119,16 +117,19 @@ module Retirelator
     Simulation.from_hash MessagePack.unpack(msg)
   end
 
-  def self.from_params(params)
+  def self.from_params(params, **runtime_options)
     params = default_params.merge(params)
     Simulation.from_hash(
-      retiree:          retiree_params(params),
-      configuration:    configuration_params(params),
-      savings_account:  { balance: params["savings_balance"] },
-      ira_account:      { balance: params["ira_balance"] },
-      roth_account:     { balance: params["roth_balance"] },
-      fixed_incomes:    fixed_incomes_params(params["fixed_incomes"]),
-      noiser:           noiser_params(params),
+      {
+        "retiree"         => retiree_params(params),
+        "configuration"   => configuration_params(params),
+        "savings_account" => { balance: params["savings_balance"] },
+        "ira_account"     => { balance: params["ira_balance"] },
+        "roth_account"    => { balance: params["roth_balance"] },
+        "fixed_incomes"   => fixed_incomes_params(params["fixed_incomes"]),
+        "noiser"          => noiser_params(params),
+      },
+      **runtime_options
     )
   end
 

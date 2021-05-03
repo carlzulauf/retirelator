@@ -18,7 +18,7 @@ module Retirelator
     attribute :tax_transactions,  TaxTransactions
     attribute :noiser,            ScaledNoiseFactory
 
-    runtime_option :logger, default: -> { Retirelator.logger }
+    runtime_option :logger, default: -> { Logger.new(STDOUT) }
 
     def accounts
       [savings_account, ira_account, roth_account]
