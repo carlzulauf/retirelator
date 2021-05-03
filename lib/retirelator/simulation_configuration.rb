@@ -1,7 +1,7 @@
 module Retirelator
   class SimulationConfiguration < DecimalStruct
     attribute :description,             default: -> { random_desc }
-    attribute :start_date, Date,        default: -> { Date.today }
+    attribute :start_date, Date,        default: -> { Date.current_month }
 
     # annual rate of inflation, which increases ppp ratio every year
     decimal :inflation_rate,            default: -> { 1.9 }

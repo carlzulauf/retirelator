@@ -6,7 +6,7 @@ module Retirelator
       end
     end
 
-    attribute :start_date,        Date,                     default: -> { Date.today }
+    attribute :start_date,        Date,                     default: -> { Date.current_month }
     attribute :retiree,           Retiree
     attribute :configuration,     SimulationConfiguration
     attribute :tax_years,         TaxYears
@@ -25,7 +25,7 @@ module Retirelator
     end
 
     def current_date
-      @current_date ||= start_date.beginning_of_month
+      @current_date ||= start_date
     end
 
     def current_tax_year
@@ -50,7 +50,7 @@ module Retirelator
       tax_ytd_income
       create_opening_transactions
       loop do
-        next_month = current_date.advance(months: 1)
+        next_month = Date.advance_months(1, current_date)
         logger.info "Advancing to #{next_month}"
         advance_tax_year unless current_tax_year.year == next_month.year
         @current_date = next_month

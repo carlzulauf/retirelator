@@ -49,14 +49,6 @@ require "retirelator/simulation"
 module Retirelator
   mattr_accessor :logger, default: Logger.new(STDOUT)
 
-  # def self.open(path)
-  #   open_json File.read(path)
-  # end
-
-  def define_collection(collection_name, type)
-    # TODO
-  end
-
   def self.open(path)
     if File.directory?(path)
       open_json(File.join(path, "simulation.json"))
@@ -124,19 +116,18 @@ module Retirelator
   end
 
   def self.load_msgpack(msg)
-    params = MessagePack.unpack(msg).deep_symbolize_keys
-    Simulation.from_hash params
+    Simulation.from_hash MessagePack.unpack(msg)
   end
 
   def self.from_params(params)
-    params          = default_params.merge(params.deep_symbolize_keys)
+    params = default_params.merge(params)
     Simulation.from_hash(
       retiree:          retiree_params(params),
       configuration:    configuration_params(params),
-      savings_account:  { balance: params[:savings_balance] },
-      ira_account:      { balance: params[:ira_balance] },
-      roth_account:     { balance: params[:roth_balance] },
-      fixed_incomes:    fixed_incomes_params(params[:fixed_incomes]),
+      savings_account:  { balance: params["savings_balance"] },
+      ira_account:      { balance: params["ira_balance"] },
+      roth_account:     { balance: params["roth_balance"] },
+      fixed_incomes:    fixed_incomes_params(params["fixed_incomes"]),
       noiser:           noiser_params(params),
     )
   end
@@ -146,14 +137,14 @@ module Retirelator
   end
 
   def self.to_params(simulation)
-    jsonish = simulation.to_hash.deep_symbolize_keys
-    retiree_params(jsonish[:retiree])
-      .merge(configuration_params(jsonish[:configuration]))
-      .merge(noiser_to_params(jsonish[:noiser]))
+    jsonish = simulation.to_hash
+    retiree_params(jsonish["retiree"])
+      .merge(configuration_params(jsonish["configuration"]))
+      .merge(noiser_to_params(jsonish["noiser"]))
       .merge(
-        ira_balance:      jsonish.dig(:ira_account,     :balance),
-        roth_balance:     jsonish.dig(:roth_account,    :balance),
-        savings_balance:  jsonish.dig(:savings_account, :balance),
+        "ira_balance"     => jsonish.dig("ira_account",     "balance"),
+        "roth_balance"    => jsonish.dig("roth_account",    "balance"),
+        "savings_balance" => jsonish.dig("savings_account", "balance"),
       )
   end
 
@@ -162,7 +153,7 @@ module Retirelator
   end
 
   def self.retiree_params(params)
-    params.slice(*%i{
+    params.slice(*%w{
       name salary
       date_of_birth retirement_date target_death_date
       percent_401k_contribution percent_401k_match max_percent_401k_match
@@ -173,15 +164,18 @@ module Retirelator
   end
 
   def self.noiser_to_params(noiser_hash)
-    { noise: noiser_hash[:noise], rand_seed: noiser_hash[:seed] }.compact
+    {
+      "noise" => noiser_hash["noise"],
+      "rand_seed" => noiser_hash["seed"]
+    }.compact
   end
 
   def self.noiser_params(params)
-    { noise: params[:noise], seed: params[:rand_seed] }.compact
+    { "noise" => params["noise"], "seed" => params["rand_seed"] }.compact
   end
 
   def self.configuration_params(params)
-    params.slice(*%i{
+    params.slice(*%w{
       description start_date
       inflation_rate salary_growth_rate
       investment_growth_rate short_term_gains_ratio

@@ -16,9 +16,6 @@ require "active_support/core_ext/array/wrap" unless Array.respond_to?(:wrap)
 # For Array#in_groups, #in_groups_of
 require "active_support/core_ext/array/grouping" unless [].respond_to?(:in_groups)
 
-# Numeric #days, #months, #years, etc
-require "active_support/core_ext/integer/time" unless 0.respond_to?(:years)
-
 # number_to_currency and other helpers
 require "active_support/dependencies/autoload"
 require "active_support/number_helper"
