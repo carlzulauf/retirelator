@@ -7,7 +7,6 @@ if ARGV[0].blank?
   exit
 end
 
-Retirelator.logger.level = Logger::FATAL
 sim_params = YAML.load_file(ARGV[0])
 
 puts "Setting up params for each sim"
@@ -19,7 +18,9 @@ end
 ractors = params_list.in_groups(10, false).map do |work|
   Ractor.new(work.freeze) do |work_list|
     work_list.each do |params|
-      simulation = Retirelator.from_params(params)
+      logger = Logger.new(STDOUT)
+      logger.level = Logger::FATAL
+      simulation = Retirelator.from_params(params, logger: logger)
       simulation.simulate!
       balance = simulation.accounts.map(&:balance).sum
       Ractor.yield "Seed: #{simulation.noiser.seed.to_s.rjust(39)}. Balance: #{simulation.to_currency(balance).rjust(20)}."
