@@ -1,7 +1,8 @@
 #!/usr/bin/env ruby
 require_relative "env.rb"
 
-if ARGV[0].blank?
+case ARGV[0]
+when nil, ""
   puts "Missing required path to simulation configuration"
   exit
 end

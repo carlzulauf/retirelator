@@ -8,7 +8,7 @@ module Retirelator
 
       def from_hash(maybe_array)
         self.new.tap do |collection|
-          Array.wrap(maybe_array).each do |item_from_hash|
+          Array(maybe_array).each do |item_from_hash|
             collection.add_from_hash(item_from_hash)
           end
         end

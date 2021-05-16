@@ -72,7 +72,7 @@ describe Retirelator::Simulation do
       it "serializes nested objects into a JSON-like document" do
         doc = subject.as_json
         expect(doc).to be_a(Hash)
-        expect(doc.keys).to be_many
+        expect(doc.keys.count).to be > 1
         expect(doc["retiree"]).to be_a(Hash)
       end
 
@@ -105,9 +105,9 @@ describe Retirelator::Simulation do
         it "can still serialize the simulation" do
           doc = subject.as_json
           expect(doc).to be_a(Hash)
-          expect(doc.keys).to be_many
+          expect(doc.keys.count).to be > 1
           expect(doc["retiree"]).to be_a(Hash)
-          expect(doc["transactions"]).to be_many
+          expect(doc["transactions"].count).to be > 1
           expect(doc["transactions"].first).to be_a(Hash)
         end
 
@@ -115,7 +115,7 @@ describe Retirelator::Simulation do
           doc = subject.as_json
           obj = described_class.from_hash(doc)
           expect(obj.retiree.name).to eq("Pat")
-          expect(obj.transactions).to be_many
+          expect(obj.transactions.count).to be > 1
           expect(obj.transactions.first).to be_a(Retirelator::Transaction)
         end
       end

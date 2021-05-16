@@ -18,7 +18,7 @@ module Retirelator
     attribute :tax_transactions,  TaxTransactions
     attribute :noiser,            ScaledNoiseFactory
 
-    runtime_option :logger, default: -> { Logger.new(STDOUT) }
+    runtime_option :logger, default: -> { Logger.new(nil) }
 
     def accounts
       [savings_account, ira_account, roth_account]
@@ -106,7 +106,7 @@ module Retirelator
       # fill in missing balances
       balances.each_with_index do |date, i|
         keys.each do |key|
-          date[key] = balances[i - 1][key] || 0 if date[key].blank? && i > 0
+          date[key] = balances[i - 1][key] || 0 if date[key].nil? && i > 0
         end
       end
       balances.map { |row| CsvRow.new(row) }

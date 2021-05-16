@@ -78,11 +78,11 @@ module Retirelator
   # represents a collection/array of tax brackets
   class TaxBrackets
     def self.from_hash(maybe_array)
-      Array.wrap(maybe_array).map { |value| TaxBracket.from_hash(value) }
+      Array(maybe_array).map { |value| TaxBracket.from_hash(value) }
     end
 
     def self.to_hash(maybe_array)
-      Array.wrap(maybe_array).map { |value| TaxBracket.to_hash(value) }
+      Array(maybe_array).map { |value| TaxBracket.to_hash(value) }
     end
   end
 end

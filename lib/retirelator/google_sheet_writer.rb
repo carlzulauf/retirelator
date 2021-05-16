@@ -75,7 +75,7 @@ module Retirelator
       [].tap do |requests|
         sheets.keys.each_with_index do |title, i|
           sheet = existing_sheets[i]
-          if sheet.present?
+          if sheet
             next if sheet.properties.title == title
             requests << SERVICE::Request.new(
               update_sheet_properties: SERVICE::UpdateSheetPropertiesRequest.new(
@@ -120,7 +120,7 @@ module Retirelator
         {}
       end
       id = spreadsheets[name]
-      return id if id.present?
+      return id if id
       spreadsheet = service.create_spreadsheet({
         properties: {
           title: name
@@ -146,7 +146,7 @@ module Retirelator
       token_store = Google::Auth::Stores::FileTokenStore.new(file: token_path)
       authorizer  = Google::Auth::UserAuthorizer.new(client_id, api_scope, token_store)
       credentials = authorizer.get_credentials(user_id)
-      return credentials if credentials.present?
+      return credentials if credentials
       auth_url = authorizer.get_credentials(base_url: auth_urn)
       puts "Login via this URL and paste resulting code: #{auth_url.inspect}"
       code = STDIN.gets.chomp

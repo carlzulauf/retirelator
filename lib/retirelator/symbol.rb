@@ -1,7 +1,11 @@
 module Retirelator
   class Symbol
     def self.from_hash(str)
-      str.to_sym if str.present?
+      case str
+      when nil, "" then nil
+      else
+        str.to_sym
+      end
     end
 
     def self.to_hash(sym)

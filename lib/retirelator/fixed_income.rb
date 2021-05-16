@@ -14,7 +14,7 @@ module Retirelator
     decimal :starting_monthly_income, default: -> { monthly_income }
 
     def pay(retiree, date, income_tax)
-      return [] if start_date.blank? && date < retiree.retirement_date
+      return [] if start_date.nil? && date < retiree.retirement_date
       return [] if date < start_date
       return [] if stop_date && date > stop_date
       tax_transactions, net_income = pay_tax(monthly_income, income_tax)

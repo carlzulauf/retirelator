@@ -1,11 +1,20 @@
 module Retirelator
   class Date
     def self.from_hash(str)
-      ::Date.parse(str) if str.present?
+      case str
+      when nil, "" then nil
+      else
+        ::Date.parse(str)
+      end
     end
 
     def self.to_hash(date)
-      date.presence&.to_s
+      case date
+      when Date
+        date.to_s("%Y-%m-%d")
+      else
+        nil
+      end
     end
 
     def self.today

@@ -2,12 +2,21 @@
 require_relative "env.rb"
 require "pry"
 
-if ARGV[0].blank?
-  puts "Missing required path to simulation configuration"
-  exit
-end
+sim_path =
+  case ARGV[0]
+  when nil, ""
+    case ENV["RETIRELATOR_SIMULATION"]
+    when nil, ""
+      puts "Missing required path to sim_path configuration"
+      exit
+    else
+      ENV["RETIRELATOR_SIMULATION"]
+    end
+  else
+    ARGV[0]
+  end
 
-sim_params = YAML.load_file(ARGV[0])
+sim_params = YAML.load_file(sim_path)
 
 puts "Setting up params for each sim"
 params_list = [sim_params.merge("noise" => 0).freeze]
@@ -15,11 +24,16 @@ params_list = [sim_params.merge("noise" => 0).freeze]
   params_list << sim_params.merge("rand_seed" => Random.new.seed)
 end
 
-ractors = params_list.in_groups(10, false).map do |work|
+groups = 10.times.map { Array.new }
+params_list.each_with_index do |params, i|
+  groups[i % groups.count] << params
+end
+
+ractors = groups.map do |work|
   Ractor.new(work.freeze) do |work_list|
+    buffer = StringIO.new
+    logger = Logger.new(buffer)
     work_list.each do |params|
-      logger = Logger.new(STDOUT)
-      logger.level = Logger::FATAL
       simulation = Retirelator.from_params(params, logger: logger)
       simulation.simulate!
       balance = simulation.accounts.map(&:balance).sum
@@ -32,7 +46,7 @@ loop do
   taken = 0
   ractors.each do |a|
     result = a.take
-    if result.present?
+    if result && !result.empty?
       puts result
       taken += 1
     end

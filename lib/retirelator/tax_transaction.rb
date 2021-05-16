@@ -45,11 +45,11 @@ module Retirelator
   # represents a collection/array of tax transactions
   class TaxTransactions
     def self.from_hash(maybe_array)
-      Array.wrap(maybe_array).map { |value| TaxTransaction.from_hash(value) }
+      Array(maybe_array).map { |value| TaxTransaction.from_hash(value) }
     end
 
     def self.to_hash(maybe_array)
-      Array.wrap(maybe_array).map { |value| TaxTransaction.to_hash(value) }
+      Array(maybe_array).map { |value| TaxTransaction.to_hash(value) }
     end
   end
 end

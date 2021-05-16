@@ -1,17 +1,19 @@
 # stdlib
 require "bigdecimal"
 require "bigdecimal/util"
-require "json"
-require "yaml"
 require "csv"
+require "delegate"
+require "json"
+require "logger"
 require "securerandom"
+require "yaml"
 
 # dependecies
 require "ulid"
 # require "dry-types"
 # require "dry-initializer"
 require "opt_struct"
-require "retirelator/active_support_features"
+# require "retirelator/active_support_features"
 
 # utilities
 # require "retirelator/types"
@@ -82,10 +84,13 @@ module Retirelator
   def self.save_csv(collection, path)
     CSV.open(path, "w") do |csv|
       collection.each_with_index do |transaction, i|
-        rows = Array.wrap(transaction.as_csv)
+        rows = Array(transaction.as_csv)
         csv << rows.first.keys if i == 0
         rows.each do |row|
-          csv << row.values.map { |v| v.to_s.presence }
+          csv << row.values.map do |value|
+            value = value.to_s
+            value.empty? ? nil : value
+          end
         end
       end
     end
@@ -134,7 +139,11 @@ module Retirelator
   end
 
   def self.fixed_incomes_params(accounts_params)
-    accounts_params.presence || []
+    case accounts_params
+    when nil, {}, [] then []
+    else
+      accounts_params
+    end
   end
 
   def self.to_params(simulation)

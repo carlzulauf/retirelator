@@ -3,18 +3,24 @@ require "pry"
 require_relative "env.rb"
 require "yaml"
 
-if ARGV[0].blank?
+case ARGV[0]
+when nil, ""
   puts "Missing required path to simulation configuration"
   exit
 end
 
-SIM_SAVE_NAME = ARGV[1].presence || File.basename(ARGV[0], '.yml')
+SIM_SAVE_NAME =
+  case ARGV[1]
+  when nil, "" then ARGV[1]
+  else
+    File.basename(ARGV[0], '.yml')
+  end
 SIM_SAVE_PATH = File.join(ROOT_DIR, "simulations", File.basename(ARGV[0], '.yml'))
 CREDENTIALS_PATH = File.join(ROOT_DIR, "config", "credentials.json")
 
 FileUtils.mkdir_p(SIM_SAVE_PATH)
 params = YAML.load_file(ARGV[0])
-params.merge!(rand_seed: ENV["SEED"].to_i) if ENV["SEED"].present?
+params.merge!(rand_seed: ENV["SEED"].to_i) if ENV["SEED"] && !ENV["SEED"].empty?
 Retirelator.logger.level = Logger::WARN
 
 simulation = Retirelator.from_params params
