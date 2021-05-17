@@ -67,7 +67,6 @@ describe Retirelator do
       let(:sim2) { subject.from_params(params.merge("rand_seed" => 456), logger: SPEC_LOGGER) }
 
       it "produces different results for the two simulations" do
-        binding.pry
         sim1.simulate!
         sim2.simulate!
         expect(sim1.ira_account.balance).to be > 0

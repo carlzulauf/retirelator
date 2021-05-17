@@ -82,5 +82,9 @@ module Retirelator
     end
 
     alias_method :as_json, :to_hash
+
+    def to_json(*a)
+      JSON.generate as_json, *a
+    end
   end
 end

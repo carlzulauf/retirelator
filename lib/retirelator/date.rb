@@ -10,8 +10,8 @@ module Retirelator
 
     def self.to_hash(date)
       case date
-      when Date
-        date.to_s("%Y-%m-%d")
+      when ::Date
+        date.strftime("%Y-%m-%d")
       else
         nil
       end
