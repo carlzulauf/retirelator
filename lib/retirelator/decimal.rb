@@ -5,7 +5,7 @@ module Retirelator
     end
 
     def self.to_hash(decimal)
-      decimal
+      decimal&.to_s("F")
     end
   end
 end

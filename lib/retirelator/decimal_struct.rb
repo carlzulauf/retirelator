@@ -3,7 +3,6 @@ module Retirelator
     # include OptStruct.build
     # cattr_accessor :runtime_attributes, instance_reader: true, default: []
     # extend Dry::Initializer
-    shareable!
 
     class << self
       alias_method :runtime_option, :option
@@ -65,7 +64,14 @@ module Retirelator
     end
 
     def to_currency(decimal)
-      ActiveSupport::NumberHelper.number_to_currency decimal
+      str = decimal.round(2).to_s("F")
+      left_of_decimal, right_of_decimal = str.split(".")
+      leading_digits = left_of_decimal.length % 3
+      remaining_digits = left_of_decimal[leading_digits, left_of_decimal.length]
+      parts = []
+      parts << left_of_decimal[0, leading_digits] if leading_digits > 0
+      parts.concat remaining_digits.scan(/\d{3}/)
+      "$#{parts.join(',')}.#{right_of_decimal.ljust(2, '0')}"
     end
 
     def to_string(decimal)

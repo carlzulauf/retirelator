@@ -23,6 +23,10 @@ module Retirelator
       @enum
     end
 
+    def __setobj__(obj)
+      @enum = obj
+    end
+
     def collection_type
       nil
     end
