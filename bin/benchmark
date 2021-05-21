@@ -1,0 +1,66 @@
+#!/usr/bin/env ruby
+require_relative "env.rb"
+require "yaml"
+
+iterations = (ENV["BM_RUNS"] || 100).to_i
+benchmark_seed = (ENV["BM_SEED"] || Random.new.seed).to_i
+puts "BM_SEED=#{benchmark_seed}", nil
+
+DEFAULT_PARAMS = YAML.load <<YAML
+---
+name: Benchmark
+noise: 0.15
+salary: 100000
+date_of_birth: '1970-01-01'
+retirement_date: '2030-01-01'
+target_death_date: '2070-01-01'
+percent_401k_contribution: 4
+percent_401k_match: 100
+max_percent_401k_match: 4
+annual_ira_contribution: 0
+annual_roth_contribution: 0
+annual_roth_conversion: 0
+monthly_savings: 200
+monthly_allowance: 4000
+description: With Fixed Incomes
+inflation_rate: 1.9
+salary_growth_rate: 3.0
+investment_growth_rate: 6.5
+short_term_gains_ratio: 0.1
+ira_balance: 350000
+roth_balance: 25000
+savings_balance: 50000
+fixed_incomes:
+- name: Social Security
+  monthly_income: 2631
+  start_date: '2050-03-30'
+- name: Corp Pension
+  monthly_income: 1500
+- name: US Army Pension
+  taxable: false
+  monthly_income: 1300
+  indexed: false
+YAML
+
+params = if ARGV[0] && !ARGV[0].empty?
+  YAML.load_file(ARGV[0])
+else
+  DEFAULT_PARAMS
+end
+
+chaos = Random.new(benchmark_seed)
+seeds = iterations.times.map { chaos.random_number(0..(2 ** 128)) }
+
+puts "Starting single thread/process test"
+started_at = Time.now
+
+balances = seeds.map do |seed|
+  sim_params = params.merge("rand_seed" => seed)
+  simulation = Retirelator.from_params(sim_params)
+  simulation.simulate!
+  simulation.accounts.map(&:balance).sum
+end
+puts "Total of balances: #{Retirelator::Decimal.to_currency(balances.sum)}"
+stopped_at = Time.now
+elapsed = stopped_at - started_at
+puts "Iterations: #{iterations}, Elapsed: #{elapsed.round(2)}s, OPS: #{(iterations / elapsed).round(4)} p/s"
