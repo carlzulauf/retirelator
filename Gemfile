@@ -7,6 +7,6 @@ gem "pry-doc"
 gem "rspec"
 gem "google-api-client"
 gem "msgpack"
-gem "opt_struct", path: "../opt_struct"
+gem "opt_struct"
 
 gemspec
