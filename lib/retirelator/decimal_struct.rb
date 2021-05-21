@@ -64,18 +64,11 @@ module Retirelator
     end
 
     def to_currency(decimal)
-      str = decimal.round(2).to_s("F")
-      left_of_decimal, right_of_decimal = str.split(".")
-      leading_digits = left_of_decimal.length % 3
-      remaining_digits = left_of_decimal[leading_digits, left_of_decimal.length]
-      parts = []
-      parts << left_of_decimal[0, leading_digits] if leading_digits > 0
-      parts.concat remaining_digits.scan(/\d{3}/)
-      "$#{parts.join(',')}.#{right_of_decimal.ljust(2, '0')}"
+      Decimal.to_currency(decimal)
     end
 
     def to_string(decimal)
-      round(decimal).to_s
+      Decimal.to_string(decimal)
     end
 
     def to_hash(*)
