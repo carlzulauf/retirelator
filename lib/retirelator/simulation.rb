@@ -47,6 +47,7 @@ module Retirelator
 
     def simulate!
       logger.info "Starting simulation"
+      # fix_fixed_incomes
       tax_ytd_income
       create_opening_transactions
       loop do
@@ -133,7 +134,17 @@ module Retirelator
       end
     end
 
+    def retired?
+      current_date >= retiree.retirement_date
+    end
+
     private
+
+    # def fix_fixed_incomes
+    #   fixed_incomes.each do |account|
+    #     account.start_date ||= retiree.retirement_date
+    #   end
+    # end
 
     def account_transactions(account)
       transactions.select { |transaction| transaction.account == account.name }
@@ -157,7 +168,7 @@ module Retirelator
 
     def inflate_fixed_incomes
       fixed_incomes.each do |account|
-        account.inflate(current_date, configuration.inflation_ratio)
+        account.inflate(retired?, current_date, configuration.inflation_ratio)
       end
     end
 
@@ -199,7 +210,7 @@ module Retirelator
     def simulate_month
       simulate_account_growth
       extra_income = payout_fixed_incomes
-      if current_date >= retiree.retirement_date
+      if retired?
         extra_income = withdraw_monthly_allowance(extra_income)
       else
         apply_monthly_salary
@@ -220,7 +231,7 @@ module Retirelator
     def payout_fixed_incomes
       amount = 0
       fixed_incomes.each do |account|
-        transactions = account.pay(retiree, current_date, current_tax_year.income)
+        transactions = account.pay(retired?, current_date, current_tax_year.income)
         add_transactions transactions
         transactions.each { |t| amount += t.net_amount }
       end

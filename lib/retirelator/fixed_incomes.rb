@@ -1,7 +1,7 @@
 module Retirelator
   class FixedIncomes < Collection
     def collection_type
-      TaxBracket
+      FixedIncome
     end
   end
 end
