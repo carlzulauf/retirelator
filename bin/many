@@ -11,7 +11,6 @@ SIM_SAVE_NAME = File.basename(ARGV[0], '.yml').freeze
 # SIM_SAVE_PATH = File.join(ROOT_DIR, "simulations", File.basename(ARGV[0], '.yml'), "runs")
 # FileUtils.mkdir_p(SIM_SAVE_PATH)
 
-Retirelator.logger.level = Logger::FATAL
 sim_params = YAML.load_file(ARGV[0])
 
 # Retirelator.save_json(simulation, File.join(SIM_SAVE_PATH, "init-#{ULID.generate}")
