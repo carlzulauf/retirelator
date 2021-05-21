@@ -52,16 +52,16 @@ describe Retirelator::FixedIncome do
 
     describe "#inflate" do
       it "returns the fixed income instance" do
-        expect(subject.inflate(Date.today, 1.05)).to eq(subject)
+        expect(subject.inflate(true, Date.today, 1.05)).to eq(subject)
       end
 
       it "ignores inflation when date is before start_date" do
-        subject.inflate(Date.today, 1.05)
+        subject.inflate(true, Date.today, 1.05)
         expect(subject.monthly_income).to eq(1_500)
       end
 
       it "changes the monthly_income amount by the specified ratio" do
-        subject.inflate(Date.new(2031), 1.05)
+        subject.inflate(true, Date.new(2031), 1.05)
         expect(subject.monthly_income).to eq(1_575)
       end
     end
