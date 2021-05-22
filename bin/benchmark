@@ -3,8 +3,11 @@ require_relative "env.rb"
 require "yaml"
 
 iterations = (ENV["BM_RUNS"] || 100).to_i
-benchmark_seed = (ENV["BM_SEED"] || Random.new.seed).to_i
-puts "BM_SEED=#{benchmark_seed}", nil
+benchmark_seed = ENV["BM_SEED"].to_i
+benchmark_seed = Random.new.seed if benchmark_seed.zero?
+
+puts "BM_SEED=#{benchmark_seed}"
+puts "BM_RUNS=#{iterations}", nil
 
 DEFAULT_PARAMS = YAML.load <<YAML
 ---
@@ -51,16 +54,18 @@ end
 chaos = Random.new(benchmark_seed)
 seeds = iterations.times.map { chaos.random_number(0..(2 ** 128)) }
 
+def single_threaded(params, seeds)
+  seeds.map do |seed|
+    sim_params = params.merge("rand_seed" => seed)
+    simulation = Retirelator.from_params(sim_params)
+    simulation.simulate!
+    simulation.accounts.map(&:balance).sum
+  end.sum
+end
+
 puts "Starting single thread/process test"
 started_at = Time.now
-
-balances = seeds.map do |seed|
-  sim_params = params.merge("rand_seed" => seed)
-  simulation = Retirelator.from_params(sim_params)
-  simulation.simulate!
-  simulation.accounts.map(&:balance).sum
-end
-puts "Total of balances: #{Retirelator::Decimal.to_currency(balances.sum)}"
-stopped_at = Time.now
-elapsed = stopped_at - started_at
+balances = single_threaded(params, seeds)
+elapsed = Time.now - started_at
+puts "Total of balances: #{Retirelator::Decimal.to_currency(balances)}"
 puts "Iterations: #{iterations}, Elapsed: #{elapsed.round(2)}s, OPS: #{(iterations / elapsed).round(4)} p/s"
