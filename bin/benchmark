@@ -90,7 +90,6 @@ puts "Iterations: #{iterations}, Elapsed: #{elapsed.round(2)}s, OPS: #{(iteratio
 
 puts nil, "Starting redis queue with #{workers_count} workers"
 setup_redis(workers_count)
-puts "Workers started"
 started_at = Time.now
 balances = via_redis(params, seeds)
 elapsed = Time.now - started_at

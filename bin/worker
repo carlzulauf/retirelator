@@ -3,5 +3,4 @@ require_relative "env.rb"
 require "redis"
 
 @worker = Retirelator::JobWorker.new
-puts "Starting worker #{@worker.id}"
 @worker.listen
