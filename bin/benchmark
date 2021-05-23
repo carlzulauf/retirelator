@@ -6,7 +6,7 @@ require "redis"
 iterations = (ENV["BM_RUNS"] || 100).to_i
 benchmark_seed = ENV["BM_SEED"].to_i
 benchmark_seed = Random.new.seed if benchmark_seed.zero?
-workers_count = (ENV["BM_WORKERS"] || 8).to_i
+workers_count = (ENV["BM_WORKERS"] || 16).to_i
 
 puts "BM_SEED=#{benchmark_seed}"
 puts "BM_RUNS=#{iterations}", nil
