@@ -10,17 +10,15 @@ require "yaml"
 
 # dependecies
 require "ulid"
-# require "dry-types"
-# require "dry-initializer"
 require "opt_struct"
-# require "retirelator/active_support_features"
 
 # utilities
-# require "retirelator/types"
 require "retirelator/date"
 require "retirelator/symbol"
 require "retirelator/decimal"
 require "retirelator/decimal_struct"
+require "retirelator/job_worker"
+require "retirelator/job_manager"
 
 # colletion types
 require "retirelator/collection"
@@ -49,6 +47,14 @@ require "retirelator/tax_year"
 require "retirelator/simulation"
 
 module Retirelator
+  def self.redis
+    @redis ||= Redis.current
+  end
+
+  def self.redis=(redis_client)
+    @redis = redis_client
+  end
+
   def self.open(path)
     if File.directory?(path)
       open_json(File.join(path, "simulation.json"))

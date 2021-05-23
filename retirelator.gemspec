@@ -13,10 +13,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/carlzulauf/retirelator"
   spec.license       = "MIT"
 
-  # spec.add_runtime_dependency "dry-initializer", ">= 1.0.0"
-  # spec.add_runtime_dependency "dry-types", ">= 1.0.0"
   spec.add_runtime_dependency "opt_struct", ">= 1.2.0"
-  spec.add_runtime_dependency "activesupport", ">= 4.0.0"
   spec.add_runtime_dependency "ulid", ">= 1.0.0"
 
   spec.files         = `git ls-files`.split("\n").grep(/^lib/)

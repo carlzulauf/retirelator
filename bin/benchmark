@@ -1,10 +1,12 @@
 #!/usr/bin/env ruby
 require_relative "env.rb"
 require "yaml"
+require "redis"
 
 iterations = (ENV["BM_RUNS"] || 100).to_i
 benchmark_seed = ENV["BM_SEED"].to_i
 benchmark_seed = Random.new.seed if benchmark_seed.zero?
+workers_count = (ENV["BM_WORKERS"] || 8).to_i
 
 puts "BM_SEED=#{benchmark_seed}"
 puts "BM_RUNS=#{iterations}", nil
@@ -63,9 +65,35 @@ def single_threaded(params, seeds)
   end.sum
 end
 
+def setup_redis(workers)
+  @worker_pids = workers.times.map { Process.spawn("bin/worker") }
+  sleep 5
+end
+
+def teardown_redis
+  @worker_pids.each { |pid| Process.kill("TERM", pid) }
+  Process.waitall
+end
+
+def via_redis(params, seeds)
+  @manager = Retirelator::JobManager.enqueue(params, seeds)
+  @manager.listen
+  @manager.balances
+end
+
 puts "Starting single thread/process test"
 started_at = Time.now
 balances = single_threaded(params, seeds)
 elapsed = Time.now - started_at
+puts "Total of balances: #{Retirelator::Decimal.to_currency(balances)}"
+puts "Iterations: #{iterations}, Elapsed: #{elapsed.round(2)}s, OPS: #{(iterations / elapsed).round(4)} p/s"
+
+puts nil, "Starting redis queue with #{workers_count} workers"
+setup_redis(workers_count)
+puts "Workers started"
+started_at = Time.now
+balances = via_redis(params, seeds)
+elapsed = Time.now - started_at
+teardown_redis
 puts "Total of balances: #{Retirelator::Decimal.to_currency(balances)}"
 puts "Iterations: #{iterations}, Elapsed: #{elapsed.round(2)}s, OPS: #{(iterations / elapsed).round(4)} p/s"

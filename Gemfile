@@ -8,5 +8,6 @@ gem "rspec"
 gem "google-api-client"
 gem "msgpack"
 gem "opt_struct"
+gem "redis"
 
 gemspec

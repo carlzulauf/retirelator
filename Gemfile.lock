@@ -2,7 +2,6 @@ PATH
   remote: .
   specs:
     retirelator (0.1.0)
-      activesupport (>= 4.0.0)
       opt_struct (>= 1.2.0)
       ulid (>= 1.0.0)
 
@@ -79,6 +78,7 @@ GEM
       pry (~> 0.11)
       yard (~> 0.9.11)
     public_suffix (4.0.6)
+    redis (4.2.5)
     representable (3.1.1)
       declarative (< 0.1.0)
       trailblazer-option (>= 0.1.1, < 0.2.0)
@@ -124,6 +124,7 @@ DEPENDENCIES
   opt_struct
   pry
   pry-doc
+  redis
   retirelator!
   rspec
 
