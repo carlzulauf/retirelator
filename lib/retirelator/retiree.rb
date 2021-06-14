@@ -2,7 +2,6 @@ module Retirelator
   class Retiree < DecimalStruct
     attribute :name, default: -> { "Pat" }
 
-    attribute :date_of_birth,      Date, default: -> { Date.advance_years(-18) }
     attribute :target_death_date,  Date, default: -> { Date.advance_years(60) }
     attribute :retirement_date,    Date, default: -> { Date.advance_years(32) }
 
