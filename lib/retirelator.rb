@@ -175,7 +175,7 @@ module Retirelator
       percent_401k_contribution percent_401k_match max_percent_401k_match
       annual_ira_contribution annual_roth_contribution annual_roth_conversion
       monthly_savings monthly_allowance
-      roth_conversion_taxes_from_savings
+      roth_conversion_taxes_from_savings roth_conversions_after_retirement
     })
   end
 
