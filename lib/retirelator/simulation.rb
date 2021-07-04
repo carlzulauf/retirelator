@@ -94,6 +94,23 @@ module Retirelator
     end
 
     def monthly_balances
+      _i = 0
+      accounts = {}
+      balances = {}
+      transactions.each do |t|
+        next if t.balance.zero? && !accounts.key?(t.account)
+        col = accounts[t.account]
+        unless col
+          col = (accounts[t.account] = _i)
+          _i += 1
+        end
+        row = (balances[t.date.to_s] ||= [])
+        row[col] = t.balance
+      end
+      { accounts: accounts.keys, dates: balances.keys, balances: balances.values }
+    end
+
+    def monthly_balances_csv
       keys = Set.new
       balances_by_date = {}
       transactions.each do |t|

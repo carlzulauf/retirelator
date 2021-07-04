@@ -19,12 +19,6 @@ module Retirelator
     # ratio (0..1) of taxable investment returns expected to be short term gains (taxable as income)
     decimal :short_term_gains_ratio,    default: -> { 0.1 }
 
-    # percent of random noise to introduce into growth/inflation
-    # 0 is no noise
-    # 0.15 applies random +/- up to 15% changes in various spots
-    # 1.0 would be up to 100% changes and is probably not a good idea
-    decimal :noise,                     default: -> { 0 }
-
     # Number used to seed random number generator
     # Noise should be deterministic, meaning identical seeds should produce identical results
     attribute :seed,                    default: -> { Random.new.seed }

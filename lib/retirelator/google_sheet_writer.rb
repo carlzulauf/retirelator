@@ -103,7 +103,7 @@ module Retirelator
     def build_sheets(simulation)
       {
         "Configuration"         => simulation.config_info,
-        "Monthly Balances"      => simulation.monthly_balances,
+        "Monthly Balances"      => simulation.monthly_balances_csv,
         "All Transactions"      => simulation.transactions,
         "Tax Transactions"      => simulation.tax_transactions,
         "Tax Years"             => simulation.tax_years,
