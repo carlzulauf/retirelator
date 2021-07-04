@@ -107,7 +107,11 @@ module Retirelator
         row = (balances[t.date.to_s] ||= [])
         row[col] = t.balance
       end
-      { accounts: accounts.keys, dates: balances.keys, balances: balances.values }
+      accounts_c = accounts.count
+      rows = balances.values.map do |row|
+        accounts_c.times.map { |i| row[i] || 0.to_d }
+      end
+      { accounts: accounts.keys, dates: balances.keys, balances: rows }
     end
 
     def monthly_balances_csv
