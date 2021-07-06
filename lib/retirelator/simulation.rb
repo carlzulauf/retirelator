@@ -93,6 +93,25 @@ module Retirelator
       account_transactions roth_account
     end
 
+    def monthly_balances_chartjs
+      by_date = {}
+      accounts = Set.new
+      transactions.each do |t|
+        d = t.date.to_s
+        by_date[d] ||= {}
+        by_date[d][t.account] = t.balance
+        accounts << t.account unless t.balance.zero?
+      end
+      account_balances = accounts.map do |account|
+        {
+          label: account,
+          backgroundColor: '#f87979',
+          data: by_date.map { |_, balances| balances.fetch(account) { 0.to_d } }
+        }
+      end
+      { labels: by_date.keys, datasets: account_balances }
+    end
+
     def monthly_balances
       _i = 0
       accounts = {}
