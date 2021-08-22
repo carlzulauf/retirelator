@@ -45,24 +45,33 @@ module Retirelator
       current_date.year - start_date.year
     end
 
+    def dates
+      [].tap do |dates|
+        date = start_date
+        stop = retiree.target_death_date
+        while date <= stop
+          dates << date
+          date = Date.advance_months(1, date)
+        end
+      end
+    end
+
     def simulate!
       logger.info "Starting simulation"
       # fix_fixed_incomes
       tax_ytd_income
       create_opening_transactions
-      loop do
-        next_month = Date.advance_months(1, current_date)
-        logger.info "Advancing to #{next_month}"
-        advance_tax_year unless current_tax_year.year == next_month.year
-        @current_date = next_month
+      dates[1..-1].each do |date| # skip first date covered by opening transactions
+        logger.info "Advancing to #{date}"
+        advance_tax_year unless current_tax_year.year == date.year
+        @current_date = date
         simulate_month
-        if current_date > retiree.target_death_date
-          logger.warn "Congrats, you made it to to your target death date without going broke."
-          break
-        end
-        if accounts.none? { |a| a.balance.positive? }
+        if accounts.all?(&:empty?)
           logger.warn "You are broke on #{current_date}"
           break
+        end
+        if current_date == retiree.target_death_date
+          logger.warn "Congrats, you made it to to your target death date without going broke."
         end
       end
       logger.info "Simulation complete"
@@ -91,6 +100,10 @@ module Retirelator
 
     def roth_transactions
       account_transactions roth_account
+    end
+
+    def summarize
+      Summary.new.tap { |s| s.add_simulation(self) }
     end
 
     def monthly_balances_chartjs

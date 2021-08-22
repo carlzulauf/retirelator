@@ -72,6 +72,7 @@ describe Retirelator do
         expect(sim1.ira_account.balance).to be > 0
         expect(sim2.ira_account.balance).to be > 0
         expect(sim1.ira_account.balance).not_to eq(sim2.ira_account.balance)
+        sim1.summarize << sim2.summarize
       end
     end
   end

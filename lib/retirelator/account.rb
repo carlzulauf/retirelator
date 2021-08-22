@@ -71,6 +71,10 @@ module Retirelator
       false
     end
 
+    def empty?
+      balance <= 0
+    end
+
     private
 
     def tax_info(description)
