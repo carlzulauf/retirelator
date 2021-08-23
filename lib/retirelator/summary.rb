@@ -17,7 +17,7 @@ module Retirelator
       report["simulations"] << (sim.noiser.noise == 0 ? 0 : sim.noiser.seed)
       by_date.each_with_index do |(date, all_balances), i|
         balances = report["accounts"].map do |name|
-          last_balances[name] = all_balances[name] || last_balances[name]
+          last_balances[name] = [all_balances[name] || last_balances[name], 0.to_d].max
         end
         if existing_col = report["columns"][i]
           existing_col["totals"] << balances.sum
