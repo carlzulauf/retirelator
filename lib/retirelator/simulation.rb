@@ -6,7 +6,7 @@ module Retirelator
       end
     end
 
-    attribute :start_date,        Date,                     default: -> { Date.current_month }
+    # attribute :start_date,        Date,                     default: -> { Date.current_month }
     attribute :retiree,           Retiree
     attribute :configuration,     SimulationConfiguration
     attribute :tax_years,         TaxYears
@@ -22,6 +22,10 @@ module Retirelator
 
     def accounts
       [savings_account, ira_account, roth_account]
+    end
+
+    def start_date
+      configuration.start_date
     end
 
     def current_date
