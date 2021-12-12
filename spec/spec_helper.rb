@@ -24,7 +24,7 @@ end
 shared_context "with a valid simulation" do
   let(:retiree) { Retirelator::Retiree.new(name: "Pat") }
   let(:configuration) do
-    Retirelator::SimulationConfiguration.new(inflation_rate: 7.0)
+    Retirelator::SimulationConfiguration.new(inflation_rate: 7.0, start_date: Retirelator::Date.advance_years(-10))
   end
   let(:ira_account) { Retirelator::IraAccount.new(balance: 500_000) }
   let(:roth_account) { Retirelator::RothAccount.new(balance: 25_000) }
@@ -33,7 +33,7 @@ shared_context "with a valid simulation" do
   let(:simulation_attributes) do
     {
       retiree:          retiree,
-      start_date:       Retirelator::Date.advance_years(-10),
+      # start_date:       Retirelator::Date.advance_years(-10),
       configuration:    configuration,
       ira_account:      ira_account,
       roth_account:     roth_account,
